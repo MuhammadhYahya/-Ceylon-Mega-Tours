@@ -1,0 +1,40 @@
+.trust-band {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.trust-band__card {
+  padding: 1.4rem;
+  border-radius: 24px;
+  background: rgba(255, 250, 243, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.58);
+  box-shadow: var(--section-shadow);
+  transition:
+    transform 220ms ease,
+    box-shadow 220ms ease;
+}
+
+.trust-band__card h2 {
+  margin: 0 0 0.4rem;
+  font-family: var(--font-heading), serif;
+  font-size: 1.7rem;
+  font-weight: 600;
+}
+
+.trust-band__card p {
+  margin: 0;
+  line-height: 1.75;
+  color: var(--muted);
+}
+
+.trust-band__card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 26px 52px rgba(16, 33, 31, 0.12);
+}
+
+@media (max-width: 900px) {
+  .trust-band {
+    grid-template-columns: 1fr;
+  }
+}

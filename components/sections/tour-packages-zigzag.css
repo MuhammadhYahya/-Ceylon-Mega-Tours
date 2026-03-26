@@ -1,0 +1,106 @@
+.package-zigzag {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.package-zigzag__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.35rem;
+  align-items: stretch;
+}
+
+.package-zigzag__row.is-reversed .package-zigzag__media {
+  order: 2;
+}
+
+.package-zigzag__row.is-reversed .package-zigzag__content {
+  order: 1;
+}
+
+.package-zigzag__media {
+  position: relative;
+  min-height: 420px;
+  overflow: hidden;
+  border-radius: 30px;
+  box-shadow: var(--hero-shadow);
+}
+
+.package-zigzag__image {
+  object-fit: cover;
+  transition: transform 320ms ease;
+}
+
+.package-zigzag__content {
+  display: grid;
+  align-content: center;
+  gap: 1rem;
+  padding: 2rem;
+  border-radius: 30px;
+  background: linear-gradient(180deg, rgba(255, 250, 243, 0.88), rgba(244, 236, 224, 0.92));
+  border: 1px solid rgba(255, 255, 255, 0.58);
+  box-shadow: var(--section-shadow);
+  transition:
+    transform 220ms ease,
+    box-shadow 220ms ease;
+}
+
+.package-zigzag__meta {
+  margin: 0;
+  color: var(--accent-dark);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-size: 0.78rem;
+}
+
+.package-zigzag__content h3 {
+  margin: 0;
+  font-family: var(--font-heading), serif;
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  line-height: 0.96;
+  font-weight: 600;
+}
+
+.package-zigzag__content p {
+  margin: 0;
+  line-height: 1.8;
+  color: var(--muted);
+}
+
+.package-zigzag__link {
+  width: fit-content;
+  margin-top: 0.4rem;
+}
+
+.package-zigzag__row:hover .package-zigzag__content {
+  transform: translateY(-4px);
+  box-shadow: 0 26px 52px rgba(16, 33, 31, 0.12);
+}
+
+.package-zigzag__row:hover .package-zigzag__image {
+  transform: scale(1.05);
+}
+
+@media (max-width: 900px) {
+  .package-zigzag__row,
+  .package-zigzag__row.is-reversed {
+    grid-template-columns: 1fr;
+  }
+
+  .package-zigzag__row.is-reversed .package-zigzag__media,
+  .package-zigzag__row.is-reversed .package-zigzag__content {
+    order: initial;
+  }
+}
+
+@media (max-width: 640px) {
+  .package-zigzag__media {
+    min-height: 320px;
+    border-radius: 24px;
+  }
+
+  .package-zigzag__content {
+    padding: 1.35rem;
+    border-radius: 24px;
+  }
+}

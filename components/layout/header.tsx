@@ -1,0 +1,153 @@
+"use client";
+
+import Link from "next/link";
+import { useState } from "react";
+import { LocaleSwitch } from "@/components/layout/locale-switch";
+import { pickLocaleText } from "@/lib/copy";
+import type { Locale } from "@/lib/i18n";
+import type { ExperienceCard, HomepageData } from "@/lib/types";
+import "./header.css";
+
+type HeaderProps = {
+  locale: Locale;
+  data: HomepageData["header"];
+  packages: ExperienceCard[];
+  packagesLabel: HomepageData["tourPackages"]["navLabel"];
+};
+
+export function Header({ locale, data, packages, packagesLabel }: HeaderProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [isPackagesOpen, setIsPackagesOpen] = useState(false);
+  const packagesHomePath = `/${locale}#tour-packages`;
+  const packagesPath = `/${locale}/tour-packages`;
+  const resolveNavHref = (href: string) =>
+    href.startsWith("#") ? `/${locale}${href}` : href;
+
+  return (
+    <header className="site-header">
+      <div className="container site-header__inner">
+        <Link href={`/${locale}`} className="site-header__brand">
+          <span className="site-header__brand-mark">CMT</span>
+          <span>{data.brand}</span>
+        </Link>
+
+        <nav className="site-header__nav" aria-label="Primary">
+          {data.navigation.map((item) => (
+            <Link
+              key={item.href}
+              href={resolveNavHref(item.href)}
+              className="site-header__nav-link"
+            >
+              {pickLocaleText(item.label, locale)}
+            </Link>
+          ))}
+          <div
+            className="site-header__dropdown"
+            onMouseEnter={() => setIsPackagesOpen(true)}
+            onMouseLeave={() => setIsPackagesOpen(false)}
+          >
+            <Link href={packagesHomePath} className="site-header__nav-link">
+              {pickLocaleText(packagesLabel, locale)}
+            </Link>
+            <div className={`site-header__dropdown-menu ${isPackagesOpen ? "is-open" : ""}`}>
+              {packages.map((item) => (
+                <Link
+                  key={item.id}
+                  href={`${packagesPath}/${item.id}`}
+                  className="site-header__dropdown-link"
+                >
+                  <span>{pickLocaleText(item.title, locale)}</span>
+                  <small>{pickLocaleText(item.duration, locale)}</small>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </nav>
+
+        <div className="site-header__actions">
+          <LocaleSwitch locale={locale} className="site-header__locale" />
+          <a
+            href="https://wa.me/94770000000"
+            className="button-primary site-header__cta"
+            target="_blank"
+            rel="noreferrer"
+          >
+            {pickLocaleText(data.ctaLabel, locale)}
+          </a>
+          <button
+            type="button"
+            className="site-header__menu"
+            onClick={() => setIsOpen((value) => !value)}
+            aria-expanded={isOpen}
+            aria-label="Toggle menu"
+          >
+            <span />
+            <span />
+          </button>
+        </div>
+      </div>
+
+      <div className={`site-header__mobile ${isOpen ? "is-open" : ""}`}>
+        <div className="container site-header__mobile-inner">
+          {data.navigation.map((item) => (
+            <Link
+              key={item.href}
+              href={resolveNavHref(item.href)}
+              className="site-header__mobile-link"
+              onClick={() => setIsOpen(false)}
+            >
+              {pickLocaleText(item.label, locale)}
+            </Link>
+          ))}
+          <div className="site-header__mobile-package-row">
+            <Link
+              href={packagesHomePath}
+              className="site-header__mobile-link site-header__mobile-link--package"
+              onClick={() => setIsOpen(false)}
+            >
+              {pickLocaleText(packagesLabel, locale)}
+            </Link>
+            <button
+              type="button"
+              className="site-header__mobile-toggle"
+              onClick={() => setIsPackagesOpen((value) => !value)}
+              aria-expanded={isPackagesOpen}
+            >
+              <span>{isPackagesOpen ? "-" : "+"}</span>
+            </button>
+          </div>
+          <div className={`site-header__mobile-submenu ${isPackagesOpen ? "is-open" : ""}`}>
+            <Link
+              href={packagesPath}
+              className="site-header__mobile-link site-header__mobile-link--nested"
+              onClick={() => setIsOpen(false)}
+            >
+              {locale === "en" ? "All Tour Packages" : "Все турпакеты"}
+            </Link>
+            {packages.map((item) => (
+              <Link
+                key={item.id}
+                href={`${packagesPath}/${item.id}`}
+                className="site-header__mobile-link site-header__mobile-link--nested"
+                onClick={() => setIsOpen(false)}
+              >
+                {pickLocaleText(item.title, locale)}
+              </Link>
+            ))}
+          </div>
+          <div className="site-header__mobile-row">
+            <LocaleSwitch locale={locale} className="site-header__locale site-header__locale--mobile" />
+            <a
+              href="https://wa.me/94770000000"
+              className="button-primary"
+              target="_blank"
+              rel="noreferrer"
+            >
+              {pickLocaleText(data.ctaLabel, locale)}
+            </a>
+          </div>
+        </div>
+      </div>
+    </header>
+  );
+}

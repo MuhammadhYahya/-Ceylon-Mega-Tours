@@ -1,0 +1,182 @@
+export type LocalizedString = {
+  en: string;
+  ru: string;
+};
+
+export type LocalizedRichText = {
+  en: string[];
+  ru: string[];
+};
+
+export type LocalizedImage = {
+  src: string;
+  alt: LocalizedString;
+};
+
+export type ServiceCard = {
+  id: string;
+  title: LocalizedString;
+  description: LocalizedString;
+  stats: LocalizedString;
+  image: LocalizedImage;
+};
+
+export type ExperienceCard = {
+  id: string;
+  title: LocalizedString;
+  description: LocalizedString;
+  duration: LocalizedString;
+  image: LocalizedImage;
+};
+
+export type HybridCard = {
+  id: string;
+  kind: "destination" | "service";
+  badge: LocalizedString;
+  title: LocalizedString;
+  description: LocalizedString;
+  meta: LocalizedString;
+  image: LocalizedImage;
+};
+
+export type GalleryItem = {
+  id: string;
+  title: LocalizedString;
+  layout: "wide" | "tall" | "large" | "square";
+  image: LocalizedImage;
+};
+
+export type TestimonialItem = {
+  id: string;
+  quote: LocalizedString;
+  name: string;
+  location: LocalizedString;
+};
+
+export type TrustPoint = {
+  id: string;
+  title: LocalizedString;
+  description: LocalizedString;
+};
+
+export type InquiryFormPayload = {
+  name: string;
+  contact: string;
+  email?: string;
+  arrivalDate: string;
+  groupSize: string;
+  serviceType: string;
+  message: string;
+  company?: string;
+};
+
+export type HomepageData = {
+  header: {
+    brand: string;
+    navigation: Array<{ label: LocalizedString; href: string }>;
+    ctaLabel: LocalizedString;
+  };
+  hero: {
+    eyebrow: LocalizedString;
+    title: LocalizedString;
+    description: LocalizedString;
+    primaryCta: LocalizedString;
+    secondaryCta: LocalizedString;
+    highlights: LocalizedString[];
+    image: LocalizedImage;
+  };
+  about: {
+    eyebrow: LocalizedString;
+    heading: LocalizedString;
+    intro: LocalizedString;
+    description: LocalizedString;
+    image: LocalizedImage;
+    highlights: LocalizedString[];
+    stats: Array<{
+      value: LocalizedString;
+      label: LocalizedString;
+    }>;
+  };
+  trustPoints: TrustPoint[];
+  services: {
+    eyebrow: LocalizedString;
+    heading: LocalizedString;
+    intro: LocalizedString;
+    items: ServiceCard[];
+  };
+  destinations: {
+    eyebrow: LocalizedString;
+    heading: LocalizedString;
+    intro: LocalizedString;
+    cards: Array<{ id: string; name: LocalizedString; description: LocalizedString }>;
+    image: LocalizedImage;
+  };
+  hybridShowcase: {
+    eyebrow: LocalizedString;
+    heading: LocalizedString;
+    intro: LocalizedString;
+    primaryCta: LocalizedString;
+    secondaryCta: LocalizedString;
+    items: HybridCard[];
+  };
+  whyChooseUs: {
+    eyebrow: LocalizedString;
+    heading: LocalizedString;
+    intro: LocalizedString;
+    points: Array<{ id: string; title: LocalizedString; description: LocalizedString }>;
+  };
+  tourPackages: {
+    navLabel: LocalizedString;
+    previewEyebrow: LocalizedString;
+    previewHeading: LocalizedString;
+    previewIntro: LocalizedString;
+    pageEyebrow: LocalizedString;
+    pageHeading: LocalizedString;
+    pageIntro: LocalizedString;
+    viewAllLabel: LocalizedString;
+    eyebrow: LocalizedString;
+    heading: LocalizedString;
+    intro: LocalizedString;
+    items: ExperienceCard[];
+  };
+  gallery: {
+    eyebrow: LocalizedString;
+    heading: LocalizedString;
+    intro: LocalizedString;
+    items: GalleryItem[];
+  };
+  testimonials: {
+    eyebrow: LocalizedString;
+    heading: LocalizedString;
+    intro: LocalizedString;
+    items: TestimonialItem[];
+  };
+  inquiry: {
+    eyebrow: LocalizedString;
+    heading: LocalizedString;
+    intro: LocalizedString;
+    whatsappLabel: LocalizedString;
+    whatsappHref: string;
+    contactNotes: LocalizedString[];
+    serviceOptions: LocalizedString[];
+    submitLabel: LocalizedString;
+    successMessage: LocalizedString;
+    errorMessage: LocalizedString;
+    labels: {
+      name: LocalizedString;
+      contact: LocalizedString;
+      email: LocalizedString;
+      arrivalDate: LocalizedString;
+      groupSize: LocalizedString;
+      serviceType: LocalizedString;
+      message: LocalizedString;
+    };
+  };
+  footer: {
+    description: LocalizedString;
+    quickLinksHeading: LocalizedString;
+    contactHeading: LocalizedString;
+    contactLines: LocalizedString[];
+    copyright: LocalizedString;
+  };
+};

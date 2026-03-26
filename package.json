@@ -1,0 +1,28 @@
+{
+  "name": "ceylon-mega-tours",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "predev": "node scripts/clean-next.mjs",
+    "dev": "next dev",
+    "prebuild": "node scripts/clean-next.mjs",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@sanity/client": "^6.28.0",
+    "groq": "^3.52.1",
+    "next": "^15.3.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.1",
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.4",
+    "eslint": "^9.22.0",
+    "eslint-config-next": "^15.3.0",
+    "typescript": "^5.8.2"
+  }
+}

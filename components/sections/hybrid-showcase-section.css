@@ -1,0 +1,117 @@
+.hybrid-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.hybrid-grid__card:nth-child(1),
+.hybrid-grid__card:nth-child(4) {
+  grid-column: span 5;
+}
+
+.hybrid-grid__card:nth-child(2),
+.hybrid-grid__card:nth-child(5) {
+  grid-column: span 3;
+}
+
+.hybrid-grid__card:nth-child(3),
+.hybrid-grid__card:nth-child(6) {
+  grid-column: span 4;
+}
+
+.hybrid-card {
+  overflow: hidden;
+  height: 100%;
+  border-radius: 28px;
+  background: rgba(255, 250, 243, 0.76);
+  border: 1px solid rgba(255, 255, 255, 0.58);
+  box-shadow: var(--section-shadow);
+  transition:
+    transform 220ms ease,
+    box-shadow 220ms ease;
+}
+
+.hybrid-card__media {
+  position: relative;
+  min-height: 240px;
+  overflow: hidden;
+}
+
+.hybrid-card__image {
+  object-fit: cover;
+  transition: transform 260ms ease;
+}
+
+.hybrid-card:hover .hybrid-card__image {
+  transform: scale(1.05);
+}
+
+.hybrid-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 26px 52px rgba(16, 33, 31, 0.12);
+}
+
+.hybrid-card__body {
+  display: grid;
+  gap: 0.65rem;
+  padding: 1.3rem;
+}
+
+.hybrid-card__badge,
+.hybrid-card__meta {
+  margin: 0;
+  font-size: 0.76rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.hybrid-card__badge {
+  color: var(--accent-dark);
+}
+
+.hybrid-card__meta {
+  color: var(--muted);
+}
+
+.hybrid-card__body h3 {
+  margin: 0;
+  font-family: var(--font-heading), serif;
+  font-size: 2rem;
+  line-height: 1;
+  font-weight: 600;
+}
+
+.hybrid-card__body p:last-child {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.75;
+}
+
+.hybrid-grid__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.9rem;
+  margin-top: 1.6rem;
+}
+
+@media (max-width: 1100px) {
+  .hybrid-grid__card:nth-child(1),
+  .hybrid-grid__card:nth-child(4),
+  .hybrid-grid__card:nth-child(2),
+  .hybrid-grid__card:nth-child(3),
+  .hybrid-grid__card:nth-child(5),
+  .hybrid-grid__card:nth-child(6) {
+    grid-column: span 6;
+  }
+}
+
+@media (max-width: 900px) {
+  .hybrid-grid__card:nth-child(1),
+  .hybrid-grid__card:nth-child(4),
+  .hybrid-grid__card:nth-child(2),
+  .hybrid-grid__card:nth-child(3),
+  .hybrid-grid__card:nth-child(5),
+  .hybrid-grid__card:nth-child(6) {
+    grid-column: span 12;
+  }
+}

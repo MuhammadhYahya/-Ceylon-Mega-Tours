@@ -1,0 +1,52 @@
+.value-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.value-grid__card {
+  position: relative;
+  padding: 1.4rem;
+  border-radius: 28px;
+  background: linear-gradient(180deg, rgba(255, 250, 243, 0.88), rgba(244, 236, 224, 0.88));
+  border: 1px solid rgba(255, 255, 255, 0.58);
+  box-shadow: var(--section-shadow);
+  transition:
+    transform 220ms ease,
+    box-shadow 220ms ease;
+}
+
+.value-grid__index {
+  display: inline-block;
+  width: 2.75rem;
+  height: 2.75rem;
+  margin-bottom: 1.2rem;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(184, 140, 70, 0.24) 0%, rgba(184, 140, 70, 0.08) 72%);
+  border: 1px solid rgba(184, 140, 70, 0.22);
+}
+
+.value-grid__card h3 {
+  margin: 0 0 0.6rem;
+  font-family: var(--font-heading), serif;
+  font-size: 2rem;
+  line-height: 1;
+  font-weight: 600;
+}
+
+.value-grid__card p {
+  margin: 0;
+  line-height: 1.75;
+  color: var(--muted);
+}
+
+.value-grid__card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 26px 52px rgba(16, 33, 31, 0.12);
+}
+
+@media (max-width: 900px) {
+  .value-grid {
+    grid-template-columns: 1fr;
+  }
+}
