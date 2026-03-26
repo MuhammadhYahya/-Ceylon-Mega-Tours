@@ -13,7 +13,7 @@ type GalleryGridProps = {
 
 export function GalleryGrid({ locale, section }: GalleryGridProps) {
   return (
-    <section className="section">
+    <section id="gallery" className="section">
       <div className="container">
         <Reveal className="section-header">
           <p className="eyebrow">{pickLocaleText(section.eyebrow, locale)}</p>

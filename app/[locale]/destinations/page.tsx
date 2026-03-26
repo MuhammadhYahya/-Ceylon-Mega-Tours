@@ -2,15 +2,15 @@ import { Footer } from "@/components/layout/footer";
 import { Reveal } from "@/components/motion/reveal";
 import { Header } from "@/components/layout/header";
 import { InquirySection } from "@/components/sections/inquiry-section";
-import { TourPackagesZigzag } from "@/components/sections/tour-packages-zigzag";
+import { SignatureDestinations } from "@/components/sections/signature-destinations";
+import { pickLocaleText } from "@/lib/copy";
 import { getHomepageData } from "@/lib/homepage-data";
 import { isLocale, type Locale } from "@/lib/i18n";
-import { pickLocaleText } from "@/lib/copy";
 import { notFound } from "next/navigation";
 
 export const revalidate = 300;
 
-export default async function TourPackagesPage({
+export default async function DestinationsPage({
   params
 }: {
   params: Promise<{ locale: string }>;
@@ -36,21 +36,21 @@ export default async function TourPackagesPage({
       <section className="section">
         <Reveal className="container page-intro">
           <p className="eyebrow">
-            {pickLocaleText(data.tourPackages.pageEyebrow, locale as Locale)}
+            {pickLocaleText(data.destinations.pageEyebrow, locale as Locale)}
           </p>
           <h1 className="page-intro__title">
-            {pickLocaleText(data.tourPackages.pageHeading, locale as Locale)}
+            {pickLocaleText(data.destinations.pageHeading, locale as Locale)}
           </h1>
           <p className="page-intro__copy">
-            {pickLocaleText(data.tourPackages.pageIntro, locale as Locale)}
+            {pickLocaleText(data.destinations.pageIntro, locale as Locale)}
           </p>
         </Reveal>
       </section>
 
-      <TourPackagesZigzag
+      <SignatureDestinations
         locale={locale as Locale}
-        section={data.tourPackages}
-        items={data.tourPackages.items}
+        section={data.destinations}
+        hideHeader
       />
 
       <InquirySection locale={locale as Locale} section={data.inquiry} />

@@ -11,17 +11,47 @@ import "./header.css";
 type HeaderProps = {
   locale: Locale;
   data: HomepageData["header"];
+  destinationsLabel: HomepageData["destinations"]["navLabel"];
   packages: ExperienceCard[];
   packagesLabel: HomepageData["tourPackages"]["navLabel"];
 };
 
-export function Header({ locale, data, packages, packagesLabel }: HeaderProps) {
+export function Header({
+  locale,
+  data,
+  destinationsLabel,
+  packages,
+  packagesLabel
+}: HeaderProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isPackagesOpen, setIsPackagesOpen] = useState(false);
-  const packagesHomePath = `/${locale}#tour-packages`;
+  const labels =
+    locale === "en"
+      ? {
+          about: "About",
+          services: "Services",
+          gallery: "Gallery",
+          reviews: "Reviews",
+          inquiry: "Inquiry",
+          allPackages: "All Tour Packages"
+        }
+      : {
+          about: "Обо мне",
+          services: "Услуги",
+          gallery: "Галерея",
+          reviews: "Отзывы",
+          inquiry: "Запрос",
+          allPackages: "Все турпакеты"
+        };
+  const primaryNav = [
+    { label: labels.about, href: `/${locale}#about` },
+    { label: pickLocaleText(destinationsLabel, locale), href: `/${locale}/destinations` },
+    { label: labels.services, href: `/${locale}#services` },
+    { label: labels.gallery, href: `/${locale}#gallery` },
+    { label: labels.reviews, href: `/${locale}#reviews` },
+    { label: labels.inquiry, href: `/${locale}#inquiry` }
+  ];
   const packagesPath = `/${locale}/tour-packages`;
-  const resolveNavHref = (href: string) =>
-    href.startsWith("#") ? `/${locale}${href}` : href;
 
   return (
     <header className="site-header">
@@ -32,13 +62,9 @@ export function Header({ locale, data, packages, packagesLabel }: HeaderProps) {
         </Link>
 
         <nav className="site-header__nav" aria-label="Primary">
-          {data.navigation.map((item) => (
-            <Link
-              key={item.href}
-              href={resolveNavHref(item.href)}
-              className="site-header__nav-link"
-            >
-              {pickLocaleText(item.label, locale)}
+          {primaryNav.map((item) => (
+            <Link key={item.href} href={item.href} className="site-header__nav-link">
+              {item.label}
             </Link>
           ))}
           <div
@@ -46,10 +72,13 @@ export function Header({ locale, data, packages, packagesLabel }: HeaderProps) {
             onMouseEnter={() => setIsPackagesOpen(true)}
             onMouseLeave={() => setIsPackagesOpen(false)}
           >
-            <Link href={packagesHomePath} className="site-header__nav-link">
+            <Link href={packagesPath} className="site-header__nav-link">
               {pickLocaleText(packagesLabel, locale)}
             </Link>
             <div className={`site-header__dropdown-menu ${isPackagesOpen ? "is-open" : ""}`}>
+              <Link href={packagesPath} className="site-header__dropdown-link">
+                <span>{labels.allPackages}</span>
+              </Link>
               {packages.map((item) => (
                 <Link
                   key={item.id}
@@ -66,14 +95,6 @@ export function Header({ locale, data, packages, packagesLabel }: HeaderProps) {
 
         <div className="site-header__actions">
           <LocaleSwitch locale={locale} className="site-header__locale" />
-          <a
-            href="https://wa.me/94770000000"
-            className="button-primary site-header__cta"
-            target="_blank"
-            rel="noreferrer"
-          >
-            {pickLocaleText(data.ctaLabel, locale)}
-          </a>
           <button
             type="button"
             className="site-header__menu"
@@ -89,19 +110,19 @@ export function Header({ locale, data, packages, packagesLabel }: HeaderProps) {
 
       <div className={`site-header__mobile ${isOpen ? "is-open" : ""}`}>
         <div className="container site-header__mobile-inner">
-          {data.navigation.map((item) => (
+          {primaryNav.map((item) => (
             <Link
               key={item.href}
-              href={resolveNavHref(item.href)}
+              href={item.href}
               className="site-header__mobile-link"
               onClick={() => setIsOpen(false)}
             >
-              {pickLocaleText(item.label, locale)}
+              {item.label}
             </Link>
           ))}
           <div className="site-header__mobile-package-row">
             <Link
-              href={packagesHomePath}
+              href={packagesPath}
               className="site-header__mobile-link site-header__mobile-link--package"
               onClick={() => setIsOpen(false)}
             >
@@ -122,7 +143,7 @@ export function Header({ locale, data, packages, packagesLabel }: HeaderProps) {
               className="site-header__mobile-link site-header__mobile-link--nested"
               onClick={() => setIsOpen(false)}
             >
-              {locale === "en" ? "All Tour Packages" : "Все турпакеты"}
+              {labels.allPackages}
             </Link>
             {packages.map((item) => (
               <Link
@@ -136,15 +157,10 @@ export function Header({ locale, data, packages, packagesLabel }: HeaderProps) {
             ))}
           </div>
           <div className="site-header__mobile-row">
-            <LocaleSwitch locale={locale} className="site-header__locale site-header__locale--mobile" />
-            <a
-              href="https://wa.me/94770000000"
-              className="button-primary"
-              target="_blank"
-              rel="noreferrer"
-            >
-              {pickLocaleText(data.ctaLabel, locale)}
-            </a>
+            <LocaleSwitch
+              locale={locale}
+              className="site-header__locale site-header__locale--mobile"
+            />
           </div>
         </div>
       </div>

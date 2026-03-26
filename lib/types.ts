@@ -105,6 +105,14 @@ export type HomepageData = {
     items: ServiceCard[];
   };
   destinations: {
+    navLabel: LocalizedString;
+    previewEyebrow: LocalizedString;
+    previewHeading: LocalizedString;
+    previewIntro: LocalizedString;
+    pageEyebrow: LocalizedString;
+    pageHeading: LocalizedString;
+    pageIntro: LocalizedString;
+    viewAllLabel: LocalizedString;
     eyebrow: LocalizedString;
     heading: LocalizedString;
     intro: LocalizedString;

@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
+import { FloatingWhatsApp } from "@/components/layout/floating-whatsapp";
 import { isLocale, locales } from "@/lib/i18n";
 
 export function generateStaticParams() {
@@ -19,5 +20,10 @@ export default async function LocaleLayout({
     notFound();
   }
 
-  return children;
+  return (
+    <>
+      {children}
+      <FloatingWhatsApp locale={locale} />
+    </>
+  );
 }

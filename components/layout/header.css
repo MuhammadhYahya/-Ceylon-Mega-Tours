@@ -141,10 +141,6 @@
   color: rgba(23, 53, 54, 0.4);
 }
 
-.site-header__cta {
-  min-height: 3rem;
-}
-
 .site-header__menu {
   display: none;
   width: 3rem;
@@ -170,7 +166,6 @@
 
 @media (max-width: 900px) {
   .site-header__nav,
-  .site-header__cta,
   .site-header__locale {
     display: none;
   }
@@ -243,7 +238,7 @@
 
   .site-header__mobile-row {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end;
     gap: 0.8rem;
     margin-top: 1rem;
   }

@@ -11,22 +11,32 @@ type FooterProps = {
 };
 
 export function Footer({ locale, data }: FooterProps) {
-  const packagesPath = `/${locale}/tour-packages`;
-  const homeAnchor = (hash: string) => `/${locale}${hash}`;
   const labels =
     locale === "en"
       ? {
           about: "About",
-          explore: "Explore",
+          destinations: "Destinations",
+          services: "Services",
           packages: "Tour Packages",
+          gallery: "Gallery",
           inquiry: "Inquiry"
         }
       : {
           about: "Обо мне",
-          explore: "Открыть",
+          destinations: "Направления",
+          services: "Услуги",
           packages: "Турпакеты",
+          gallery: "Галерея",
           inquiry: "Запрос"
         };
+  const links = [
+    { label: labels.about, href: `/${locale}#about` },
+    { label: labels.destinations, href: `/${locale}/destinations` },
+    { label: labels.services, href: `/${locale}#services` },
+    { label: labels.packages, href: `/${locale}/tour-packages` },
+    { label: labels.gallery, href: `/${locale}#gallery` },
+    { label: labels.inquiry, href: `/${locale}#inquiry` }
+  ];
 
   return (
     <footer className="site-footer">
@@ -38,10 +48,11 @@ export function Footer({ locale, data }: FooterProps) {
         <div>
           <h3 className="site-footer__heading">{pickLocaleText(data.quickLinksHeading, locale)}</h3>
           <div className="site-footer__links">
-            <Link href={homeAnchor("#about")}>{labels.about}</Link>
-            <Link href={homeAnchor("#explore")}>{labels.explore}</Link>
-            <Link href={packagesPath}>{labels.packages}</Link>
-            <Link href={homeAnchor("#inquiry")}>{labels.inquiry}</Link>
+            {links.map((link) => (
+              <Link key={link.href} href={link.href}>
+                {link.label}
+              </Link>
+            ))}
           </div>
         </div>
         <div>

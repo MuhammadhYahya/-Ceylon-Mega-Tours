@@ -159,6 +159,26 @@ export const fallbackHomepage: HomepageData = {
     ]
   },
   destinations: {
+    navLabel: { en: "Destinations", ru: "Направления" },
+    previewEyebrow: { en: "Featured Destinations", ru: "Популярные направления" },
+    previewHeading: {
+      en: "Start with a few of Sri Lanka's most memorable destinations.",
+      ru: "Начните с нескольких самых ярких направлений Шри-Ланки."
+    },
+    previewIntro: {
+      en: "Use these as inspiration on the homepage, then open the full destinations page to explore the complete collection.",
+      ru: "Используйте эти места как вдохновение на главной странице, а затем откройте полную страницу направлений."
+    },
+    pageEyebrow: { en: "Destinations", ru: "Направления" },
+    pageHeading: {
+      en: "Discover the destinations that shape every Sri Lanka route.",
+      ru: "Откройте для себя направления, которые формируют каждый маршрут по Шри-Ланке."
+    },
+    pageIntro: {
+      en: "Browse the places guests ask for most, from heritage icons to tea country and the southern coast.",
+      ru: "Изучите места, которые гости выбирают чаще всего: от исторических символов до чайного региона и южного побережья."
+    },
+    viewAllLabel: { en: "View All Destinations", ru: "Смотреть все направления" },
     eyebrow: { en: "Island Highlights", ru: "Яркие места острова" },
     heading: {
       en: "Destinations that make every route feel rich and memorable.",

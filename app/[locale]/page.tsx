@@ -4,8 +4,8 @@ import { AboutSection } from "@/components/sections/about-section";
 import { FeaturedJourneys } from "@/components/sections/featured-journeys";
 import { GalleryGrid } from "@/components/sections/gallery-grid";
 import { HeroSection } from "@/components/sections/hero-section";
-import { HybridShowcaseSection } from "@/components/sections/hybrid-showcase-section";
 import { InquirySection } from "@/components/sections/inquiry-section";
+import { SignatureDestinations } from "@/components/sections/signature-destinations";
 import { TestimonialsSection } from "@/components/sections/testimonials-section";
 import { TrustBand } from "@/components/sections/trust-band";
 import { ValueSection } from "@/components/sections/value-section";
@@ -33,17 +33,38 @@ export default async function LocaleHomepage({
       <Header
         locale={locale as Locale}
         data={data.header}
+        destinationsLabel={data.destinations.navLabel}
         packages={data.tourPackages.items}
         packagesLabel={data.tourPackages.navLabel}
       />
       <HeroSection locale={locale as Locale} hero={data.hero} />
       <AboutSection locale={locale as Locale} section={data.about} />
       <TrustBand locale={locale as Locale} items={data.trustPoints} />
-      <HybridShowcaseSection
-        locale={locale as Locale}
-        section={data.hybridShowcase}
-      />
       <ValueSection locale={locale as Locale} section={data.whyChooseUs} />
+      <SignatureDestinations
+        id="destinations"
+        locale={locale as Locale}
+        section={{
+          ...data.destinations,
+          eyebrow: data.destinations.previewEyebrow,
+          heading: data.destinations.previewHeading,
+          intro: data.destinations.previewIntro
+        }}
+        limit={3}
+        action={{
+          label: data.destinations.viewAllLabel,
+          href: `/${locale}/destinations`
+        }}
+      />
+      <FeaturedJourneys
+        id="services"
+        locale={locale as Locale}
+        eyebrow={data.services.eyebrow}
+        heading={data.services.heading}
+        intro={data.services.intro}
+        items={data.services.items}
+        variant="services"
+      />
       <FeaturedJourneys
         id="tour-packages"
         locale={locale as Locale}

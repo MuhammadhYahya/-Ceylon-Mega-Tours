@@ -48,6 +48,7 @@ export default async function TourPackageDetailPage({
       <Header
         locale={locale as Locale}
         data={data.header}
+        destinationsLabel={data.destinations.navLabel}
         packages={data.tourPackages.items}
         packagesLabel={data.tourPackages.navLabel}
       />
