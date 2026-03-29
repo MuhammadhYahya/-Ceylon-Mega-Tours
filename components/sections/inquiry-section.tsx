@@ -44,24 +44,19 @@ export function InquirySection({
         body: JSON.stringify(form)
       });
 
-      const result = (await response.json()) as { ok?: boolean; message?: string };
-
-      if (!response.ok || !result.ok) {
-        throw new Error(result.message || pickLocaleText(section.errorMessage, locale));
+      if (!response.ok) {
+        throw new Error("Request failed");
       }
 
       setState({
         status: "success",
-        message: result.message || pickLocaleText(section.successMessage, locale)
+        message: pickLocaleText(section.successMessage, locale)
       });
       setForm(initialForm);
-    } catch (error) {
+    } catch {
       setState({
         status: "error",
-        message:
-          error instanceof Error
-            ? error.message
-            : pickLocaleText(section.errorMessage, locale)
+        message: pickLocaleText(section.errorMessage, locale)
       });
     }
   }
@@ -75,21 +70,23 @@ export function InquirySection({
 
   return (
     <section id="inquiry" className="section">
-      <Reveal className="container inquiry-grid">
-        <div className="inquiry-grid__lead">
+      <Reveal className="container inquiry-section">
+        <div className="inquiry-section__lead">
           <p className="eyebrow">{pickLocaleText(section.eyebrow, locale)}</p>
           <h2 className="section-heading">{pickLocaleText(section.heading, locale)}</h2>
           <p className="section-intro">{pickLocaleText(section.intro, locale)}</p>
-          <div className="inquiry-grid__notes">
+
+          <div className="inquiry-section__notes">
             {section.contactNotes.map((note) => (
-              <div key={note.en} className="inquiry-grid__note">
+              <div key={note.en} className="inquiry-section__note">
                 {pickLocaleText(note, locale)}
               </div>
             ))}
           </div>
+
           <a
             href={section.whatsappHref}
-            className="button-primary inquiry-grid__whatsapp"
+            className="button-primary inquiry-section__whatsapp"
             target="_blank"
             rel="noreferrer"
           >
@@ -106,6 +103,7 @@ export function InquirySection({
               onChange={(event) => updateField("name", event.target.value)}
             />
           </label>
+
           <label>
             <span>{pickLocaleText(section.labels.contact, locale)}</span>
             <input
@@ -114,6 +112,7 @@ export function InquirySection({
               onChange={(event) => updateField("contact", event.target.value)}
             />
           </label>
+
           <label>
             <span>{pickLocaleText(section.labels.email, locale)}</span>
             <input
@@ -122,6 +121,7 @@ export function InquirySection({
               onChange={(event) => updateField("email", event.target.value)}
             />
           </label>
+
           <label>
             <span>{pickLocaleText(section.labels.arrivalDate, locale)}</span>
             <input
@@ -131,6 +131,7 @@ export function InquirySection({
               onChange={(event) => updateField("arrivalDate", event.target.value)}
             />
           </label>
+
           <label>
             <span>{pickLocaleText(section.labels.groupSize, locale)}</span>
             <input
@@ -139,6 +140,7 @@ export function InquirySection({
               onChange={(event) => updateField("groupSize", event.target.value)}
             />
           </label>
+
           <label>
             <span>{pickLocaleText(section.labels.serviceType, locale)}</span>
             <select
@@ -156,6 +158,7 @@ export function InquirySection({
               ))}
             </select>
           </label>
+
           <label className="inquiry-form__full">
             <span>{pickLocaleText(section.labels.message, locale)}</span>
             <textarea
@@ -165,6 +168,7 @@ export function InquirySection({
               onChange={(event) => updateField("message", event.target.value)}
             />
           </label>
+
           <label className="sr-only" aria-hidden="true">
             Company
             <input
@@ -174,6 +178,7 @@ export function InquirySection({
               onChange={(event) => updateField("company", event.target.value)}
             />
           </label>
+
           <div className="inquiry-form__actions">
             <button type="submit" className="button-primary" disabled={state.status === "loading"}>
               {state.status === "loading"
@@ -182,8 +187,12 @@ export function InquirySection({
                   : "Отправка..."
                 : pickLocaleText(section.submitLabel, locale)}
             </button>
+
             {state.message ? (
-              <p className={`inquiry-form__message inquiry-form__message--${state.status}`}>
+              <p
+                className={`inquiry-form__message inquiry-form__message--${state.status}`}
+                aria-live="polite"
+              >
                 {state.message}
               </p>
             ) : null}

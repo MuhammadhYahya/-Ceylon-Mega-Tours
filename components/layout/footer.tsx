@@ -1,5 +1,7 @@
+import Image from "next/image";
 import Link from "next/link";
 import { LocaleSwitch } from "@/components/layout/locale-switch";
+import { WHATSAPP_URL } from "@/lib/contact";
 import { pickLocaleText } from "@/lib/copy";
 import type { Locale } from "@/lib/i18n";
 import type { HomepageData } from "@/lib/types";
@@ -11,40 +13,38 @@ type FooterProps = {
 };
 
 export function Footer({ locale, data }: FooterProps) {
-  const labels =
-    locale === "en"
-      ? {
-          about: "About",
-          destinations: "Destinations",
-          services: "Services",
-          packages: "Tour Packages",
-          gallery: "Gallery",
-          inquiry: "Inquiry"
-        }
-      : {
-          about: "Обо мне",
-          destinations: "Направления",
-          services: "Услуги",
-          packages: "Турпакеты",
-          gallery: "Галерея",
-          inquiry: "Запрос"
-        };
   const links = [
-    { label: labels.about, href: `/${locale}#about` },
-    { label: labels.destinations, href: `/${locale}/destinations` },
-    { label: labels.services, href: `/${locale}#services` },
-    { label: labels.packages, href: `/${locale}/tour-packages` },
-    { label: labels.gallery, href: `/${locale}#gallery` },
-    { label: labels.inquiry, href: `/${locale}#inquiry` }
+    { label: locale === "en" ? "About Me" : "Обо мне", href: `/${locale}#about` },
+    { label: locale === "en" ? "Services" : "Услуги", href: `/${locale}#services` },
+    { label: locale === "en" ? "Packages" : "Пакеты", href: `/${locale}#packages` },
+    { label: locale === "en" ? "Destinations" : "Направления", href: `/${locale}#destinations` },
+    { label: locale === "en" ? "Reviews" : "Отзывы", href: `/${locale}#reviews` },
+    { label: locale === "en" ? "Enquiry" : "Запрос", href: `/${locale}#inquiry` }
   ];
 
   return (
     <footer className="site-footer">
       <div className="container site-footer__inner">
-        <div className="site-footer__lead">
-          <p className="eyebrow">Ceylon Mega Tours</p>
+        <div className="site-footer__brand">
+          <div className="site-footer__brand-row">
+            <Image
+              src="/logo.jpg"
+              alt="Ceylon Mega Tours logo"
+              width={52}
+              height={52}
+              className="site-footer__logo"
+            />
+            <div>
+              <p className="eyebrow">Ceylon Mega Tours</p>
+              <h2 className="site-footer__title">Ceylon Mega Tours</h2>
+            </div>
+          </div>
           <p className="site-footer__description">{pickLocaleText(data.description, locale)}</p>
+          <a href={WHATSAPP_URL} className="site-footer__cta" target="_blank" rel="noreferrer">
+            WhatsApp
+          </a>
         </div>
+
         <div>
           <h3 className="site-footer__heading">{pickLocaleText(data.quickLinksHeading, locale)}</h3>
           <div className="site-footer__links">
@@ -55,6 +55,7 @@ export function Footer({ locale, data }: FooterProps) {
             ))}
           </div>
         </div>
+
         <div>
           <h3 className="site-footer__heading">{pickLocaleText(data.contactHeading, locale)}</h3>
           <div className="site-footer__contact">
@@ -64,6 +65,7 @@ export function Footer({ locale, data }: FooterProps) {
           </div>
         </div>
       </div>
+
       <div className="container site-footer__bottom">
         <p>{pickLocaleText(data.copyright, locale)}</p>
         <LocaleSwitch locale={locale} className="site-footer__locale" />

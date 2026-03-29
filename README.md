@@ -1,34 +1,23 @@
 # Ceylon Mega Tours
 
-A premium bilingual Sri Lanka tourism website built with Next.js App Router for a private tour and transport brand. The project is optimized for Vercel free deployment and supports a Sanity free-tier content workflow with local fallback content.
+A bilingual Next.js tourism website for a Sri Lanka private tour brand, prepared for production deployment and GitHub publishing. The current release is content-driven from local TypeScript data and optimized for simple deployment on Vercel or any Node-compatible host.
 
-## Highlights
+## Current Product Scope
 
-- English and Russian localized routes
-- Russian default landing route: `/ -> /ru`
-- Premium homepage with About Me, hybrid destination/service showcase, featured Tour Packages, gallery, testimonials, and inquiry flow
-- Dedicated Tour Packages list page and localized package detail pages
-- Lightweight motion system with reveal and image drift effects
-- Route-level skeleton loading
-- Vercel-friendly inquiry API route
+- Russian-first localized routing with English toggle
+- Home, destinations, tour packages, and package detail pages
+- WhatsApp-first conversion flow
+- Curated Google Business Profile review summary + testimonial cards
+- Inquiry API route with validation and production-safe logging
+- Route-level loading skeletons, metadata, robots, and sitemap generation
 
 ## Tech Stack
 
 - Next.js App Router
 - React 19
 - TypeScript
-- Sanity-ready content layer
-- CSS-based styling and motion
-
-## Routes
-
-- `/`
-- `/en`
-- `/ru`
-- `/en/tour-packages`
-- `/ru/tour-packages`
-- `/en/tour-packages/[packageId]`
-- `/ru/tour-packages/[packageId]`
+- CSS modules/global CSS
+- Local content layer in `lib/fallback-content.ts`
 
 ## Local Development
 
@@ -37,49 +26,73 @@ npm install
 npm run dev
 ```
 
-Open:
+Primary local routes:
 
 - `http://localhost:3000/ru`
 - `http://localhost:3000/en`
 
-## Environment Variables
-
-Sanity is optional. If environment variables are missing, the app uses the built-in fallback content from `lib/fallback-content.ts`.
-
-Copy `.env.example` to `.env.local` and fill in your values if you want CMS-backed content:
+Verification commands:
 
 ```bash
-NEXT_PUBLIC_SANITY_PROJECT_ID=
-NEXT_PUBLIC_SANITY_DATASET=production
+npm run lint
+npm run build
 ```
 
-## Main Project Structure
+## Environment Variables
+
+Create a `.env.local` file from `.env.example`.
+
+```bash
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
+```
+
+Production should set `NEXT_PUBLIC_SITE_URL` to the final public domain so canonical URLs, sitemap, and robots metadata resolve correctly.
+
+## Project Structure
 
 ```text
-app/                 Routes, localized pages, API routes
-components/          Layout, sections, skeletons, motion helpers
-lib/                 Types, fallback content, locale helpers, data loading
-sanity/              Sanity schema definitions
-scripts/             Small utility scripts
+app/                 App Router pages, layouts, metadata routes, API route
+components/          Layout, sections, motion helpers, skeletons
+lib/                 Content, locale helpers, site config, logger, types
+public/              Static brand and tour imagery
+scripts/             Small development/build utilities
 ```
+
+## Content Management
+
+The current site is intentionally local-content-first:
+
+- `lib/fallback-content.ts` is the main source of tours, destinations, reviews, and text copy
+- `lib/contact.ts` stores shared contact values
+- `lib/site.ts` stores site URL and metadata helpers
+
+This keeps the first production release simple and deployment-safe while remaining easy to migrate to a CMS later.
 
 ## Deployment
 
 ### Vercel
 
-1. Import the repository into Vercel.
+1. Import the repository.
 2. Framework preset: `Next.js`
 3. Build command: `npm run build`
-4. Output setting: default Next.js output
-5. Add Sanity environment variables only if you want live CMS content
+4. Install command: `npm install`
+5. Add `NEXT_PUBLIC_SITE_URL` in project environment variables.
 
-### GitHub
+### Generic Node Deployment
 
-This repository is ready to push. Recommended first commands:
+```bash
+npm install
+npm run build
+npm start
+```
+
+## GitHub Publishing
+
+Recommended first push:
 
 ```bash
 git add .
-git commit -m "Initial Ceylon Mega Tours site"
+git commit -m "Prepare Ceylon Mega Tours for production launch"
 git branch -M main
 git remote add origin <your-github-repo-url>
 git push -u origin main
@@ -87,6 +100,6 @@ git push -u origin main
 
 ## Notes
 
-- The homepage skeleton loader lives in `app/[locale]/loading.tsx`.
-- Inquiry submissions are handled by `app/api/inquiry/route.ts`.
-- The site currently works fully without Sanity because of the local fallback content layer.
+- The inquiry endpoint is `app/api/inquiry/route.ts`.
+- Route metadata and crawl directives live in `app/layout.tsx`, `app/robots.ts`, and `app/sitemap.ts`.
+- The site is static-friendly except for the inquiry API route.

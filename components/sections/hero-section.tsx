@@ -9,55 +9,80 @@ import "./hero-section.css";
 type HeroSectionProps = {
   locale: Locale;
   hero: HomepageData["hero"];
+  whatsappHref: string;
 };
 
-export function HeroSection({ locale, hero }: HeroSectionProps) {
+export function HeroSection({ locale, hero, whatsappHref }: HeroSectionProps) {
+  const statLabels =
+    locale === "en"
+      ? [
+          { value: "Private", label: "Travel style" },
+          { value: "RU Focus", label: "Guest support" },
+          { value: "Islandwide", label: "Coverage" }
+        ]
+      : [
+          { value: "Частно", label: "Формат" },
+          { value: "RU Focus", label: "Поддержка" },
+          { value: "По острову", label: "Покрытие" }
+        ];
+
   return (
-    <section className="hero section">
-      <div className="container hero__grid">
+    <section id="home" className="hero section">
+      <div className="container hero__layout">
         <Reveal className="hero__content">
           <p className="eyebrow">{pickLocaleText(hero.eyebrow, locale)}</p>
           <h1 className="hero__title">{pickLocaleText(hero.title, locale)}</h1>
           <p className="hero__description">{pickLocaleText(hero.description, locale)}</p>
+
           <div className="button-row">
-            <a href="#inquiry" className="button-primary">
+            <a href={whatsappHref} className="button-primary" target="_blank" rel="noreferrer">
               {pickLocaleText(hero.primaryCta, locale)}
             </a>
-            <a href="https://wa.me/94770000000" className="button-secondary">
+            <a href="#packages" className="button-secondary">
               {pickLocaleText(hero.secondaryCta, locale)}
             </a>
           </div>
+
           <div className="hero__highlights">
             {hero.highlights.map((item) => (
-              <div key={item.en} className="hero__highlight glass-panel">
+              <span key={item.en} className="hero__highlight">
                 {pickLocaleText(item, locale)}
-              </div>
+              </span>
             ))}
           </div>
         </Reveal>
 
         <Reveal delay={120}>
           <div className="hero__media">
-            <Drift strength={16}>
+            <Drift strength={14}>
               <Image
                 src={hero.image.src}
                 alt={pickLocaleText(hero.image.alt, locale)}
                 fill
                 priority
-                sizes="(max-width: 900px) 100vw, 50vw"
+                sizes="(max-width: 960px) 100vw, 52vw"
                 className="hero__image"
               />
             </Drift>
             <div className="hero__overlay" />
-            <div className="hero__card glass-panel">
-              <p className="hero__card-label">
-                {locale === "en" ? "Private island care" : "Частный сервис по острову"}
+            <div className="hero__trust-card glass-panel">
+              <p className="hero__trust-label">
+                {locale === "en" ? "Designed for ease" : "Продумано для комфорта"}
               </p>
-              <p className="hero__card-copy">
+              <p className="hero__trust-copy">
                 {locale === "en"
-                  ? "Curated arrivals, tailored touring, and elegant transport in one seamless journey."
-                  : "Продуманные встречи, индивидуальные маршруты и элегантный транспорт в одном цельном путешествии."}
+                  ? "Private routes, airport support, and calm pacing for guests who want confidence before they arrive."
+                  : "Частные маршруты, поддержка с аэропортом и спокойный ритм для гостей, которым важна уверенность еще до прилета."}
               </p>
+
+              <div className="hero__stats">
+                {statLabels.map((item) => (
+                  <div key={item.label} className="hero__stat">
+                    <strong>{item.value}</strong>
+                    <span>{item.label}</span>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </Reveal>

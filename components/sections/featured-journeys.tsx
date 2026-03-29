@@ -1,10 +1,14 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Drift } from "@/components/motion/drift";
 import { Reveal } from "@/components/motion/reveal";
 import { pickLocaleText } from "@/lib/copy";
 import type { Locale } from "@/lib/i18n";
-import type { ExperienceCard, LocalizedString, ServiceCard } from "@/lib/types";
+import type {
+  DestinationCard,
+  ExperienceCard,
+  LocalizedString,
+  ServiceCard
+} from "@/lib/types";
 import "./featured-journeys.css";
 
 type FeaturedJourneysProps = {
@@ -12,9 +16,9 @@ type FeaturedJourneysProps = {
   eyebrow: LocalizedString;
   heading: LocalizedString;
   intro: LocalizedString;
-  items: Array<ServiceCard | ExperienceCard>;
-  variant: "services" | "experiences";
-  locale?: Locale;
+  items: Array<ServiceCard | ExperienceCard | DestinationCard>;
+  variant: "services" | "experiences" | "destinations";
+  locale: Locale;
   limit?: number;
   action?: {
     label: LocalizedString;
@@ -29,11 +33,13 @@ export function FeaturedJourneys({
   intro,
   items,
   variant,
-  locale = "en",
+  locale,
   limit,
   action
 }: FeaturedJourneysProps) {
   const visibleItems = typeof limit === "number" ? items.slice(0, limit) : items;
+  const detailLabel =
+    locale === "en" ? "Open package" : "Открыть пакет";
 
   return (
     <section id={id} className="section">
@@ -43,34 +49,53 @@ export function FeaturedJourneys({
           <h2 className="section-heading">{pickLocaleText(heading, locale)}</h2>
           <p className="section-intro">{pickLocaleText(intro, locale)}</p>
         </Reveal>
+
         <div className="journey-grid">
-          {visibleItems.map((item, index) => (
-            <Reveal key={item.id} delay={index * 80}>
-              <article className={`journey-card journey-card--${variant}`}>
-                <div className="journey-card__image-wrap">
-                  <Drift strength={10}>
+          {visibleItems.map((item, index) => {
+            const meta =
+              "duration" in item
+                ? pickLocaleText(item.duration, locale)
+                : "stats" in item
+                  ? pickLocaleText(item.stats, locale)
+                  : pickLocaleText(item.meta, locale);
+
+            const href =
+              variant === "experiences" ? `/${locale}/tour-packages/${item.id}` : null;
+
+            return (
+              <Reveal key={item.id} delay={index * 80}>
+                <article className="journey-card">
+                  <div className="journey-card__media">
                     <Image
                       src={item.image.src}
                       alt={pickLocaleText(item.image.alt, locale)}
                       fill
-                      sizes="(max-width: 900px) 100vw, 33vw"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       className="journey-card__image"
                     />
-                  </Drift>
-                </div>
-                <div className="journey-card__body">
-                  <p className="journey-card__meta">
-                    {"duration" in item
-                      ? pickLocaleText(item.duration, locale)
-                      : pickLocaleText(item.stats, locale)}
-                  </p>
-                  <h3>{pickLocaleText(item.title, locale)}</h3>
-                  <p>{pickLocaleText(item.description, locale)}</p>
-                </div>
-              </article>
-            </Reveal>
-          ))}
+                  </div>
+
+                  <div className="journey-card__body">
+                    <p className="journey-card__meta">{meta}</p>
+                    <h3 className="journey-card__title">{pickLocaleText(item.title, locale)}</h3>
+                    <p className="journey-card__description">
+                      {pickLocaleText(item.description, locale)}
+                    </p>
+
+                    {href ? (
+                      <Link href={href} className="journey-card__link">
+                        {detailLabel}
+                      </Link>
+                    ) : (
+                      <span className="journey-card__spacer" aria-hidden="true" />
+                    )}
+                  </div>
+                </article>
+              </Reveal>
+            );
+          })}
         </div>
+
         {action ? (
           <Reveal delay={160} className="journey-grid__action">
             <Link href={action.href} className="button-ghost">

@@ -27,6 +27,17 @@ export type ExperienceCard = {
   description: LocalizedString;
   duration: LocalizedString;
   image: LocalizedImage;
+  highlights?: LocalizedString[];
+  includes?: LocalizedString[];
+  price?: LocalizedString;
+};
+
+export type DestinationCard = {
+  id: string;
+  title: LocalizedString;
+  description: LocalizedString;
+  meta: LocalizedString;
+  image: LocalizedImage;
 };
 
 export type HybridCard = {
@@ -51,6 +62,17 @@ export type TestimonialItem = {
   quote: LocalizedString;
   name: string;
   location: LocalizedString;
+  trip: LocalizedString;
+  rating: number;
+};
+
+export type GoogleReviewsSummary = {
+  rating: number;
+  reviewCount: number;
+  reviewsUrl: string;
+  label: LocalizedString;
+  ctaLabel: LocalizedString;
+  sourceNote?: LocalizedString;
 };
 
 export type TrustPoint = {
@@ -116,8 +138,7 @@ export type HomepageData = {
     eyebrow: LocalizedString;
     heading: LocalizedString;
     intro: LocalizedString;
-    cards: Array<{ id: string; name: LocalizedString; description: LocalizedString }>;
-    image: LocalizedImage;
+    cards: DestinationCard[];
   };
   hybridShowcase: {
     eyebrow: LocalizedString;
@@ -157,6 +178,7 @@ export type HomepageData = {
     eyebrow: LocalizedString;
     heading: LocalizedString;
     intro: LocalizedString;
+    googleReviews?: GoogleReviewsSummary;
     items: TestimonialItem[];
   };
   inquiry: {

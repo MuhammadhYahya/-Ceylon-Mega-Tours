@@ -4,9 +4,10 @@ function SkeletonCard() {
   return (
     <div className="homepage-skeleton__card">
       <div className="homepage-skeleton__image skeleton" />
+      <div className="homepage-skeleton__line homepage-skeleton__line--meta skeleton" />
+      <div className="homepage-skeleton__line homepage-skeleton__line--title skeleton" />
       <div className="homepage-skeleton__line skeleton" />
       <div className="homepage-skeleton__line homepage-skeleton__line--short skeleton" />
-      <div className="homepage-skeleton__line homepage-skeleton__line--small skeleton" />
     </div>
   );
 }
@@ -15,6 +16,7 @@ export function HomepageSkeleton() {
   return (
     <main className="page-shell">
       <div className="container homepage-skeleton__header skeleton" />
+
       <section className="section">
         <div className="container homepage-skeleton__hero">
           <div className="homepage-skeleton__hero-copy">
@@ -27,17 +29,23 @@ export function HomepageSkeleton() {
               <div className="homepage-skeleton__button skeleton" />
               <div className="homepage-skeleton__button skeleton" />
             </div>
+            <div className="homepage-skeleton__pills">
+              <div className="homepage-skeleton__pill skeleton" />
+              <div className="homepage-skeleton__pill skeleton" />
+              <div className="homepage-skeleton__pill skeleton" />
+            </div>
           </div>
           <div className="homepage-skeleton__hero-media skeleton" />
         </div>
       </section>
+
       <section className="section">
-        <div className="container homepage-skeleton__band">
-          <div className="homepage-skeleton__band-card skeleton" />
-          <div className="homepage-skeleton__band-card skeleton" />
-          <div className="homepage-skeleton__band-card skeleton" />
+        <div className="container homepage-skeleton__about">
+          <div className="homepage-skeleton__about-media skeleton" />
+          <div className="homepage-skeleton__about-copy skeleton" />
         </div>
       </section>
+
       <section className="section">
         <div className="container homepage-skeleton__section-head">
           <div className="homepage-skeleton__eyebrow skeleton" />
@@ -50,6 +58,7 @@ export function HomepageSkeleton() {
           <SkeletonCard />
         </div>
       </section>
+
       <section className="section">
         <div className="container homepage-skeleton__inquiry">
           <div className="homepage-skeleton__inquiry-copy skeleton" />

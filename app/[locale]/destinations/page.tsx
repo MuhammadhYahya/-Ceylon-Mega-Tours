@@ -1,14 +1,38 @@
+import type { Metadata } from "next";
 import { Footer } from "@/components/layout/footer";
 import { Reveal } from "@/components/motion/reveal";
 import { Header } from "@/components/layout/header";
+import { FeaturedJourneys } from "@/components/sections/featured-journeys";
 import { InquirySection } from "@/components/sections/inquiry-section";
-import { SignatureDestinations } from "@/components/sections/signature-destinations";
 import { pickLocaleText } from "@/lib/copy";
 import { getHomepageData } from "@/lib/homepage-data";
 import { isLocale, type Locale } from "@/lib/i18n";
+import { createPageMetadata } from "@/lib/site";
 import { notFound } from "next/navigation";
 
 export const revalidate = 300;
+
+export async function generateMetadata({
+  params
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+
+  if (!isLocale(locale)) {
+    return {};
+  }
+
+  const data = await getHomepageData(locale);
+
+  return createPageMetadata({
+    locale,
+    title: locale === "ru" ? "Направления по Шри-Ланке" : "Sri Lanka Destinations",
+    description: pickLocaleText(data.destinations.pageIntro, locale),
+    pathname: "/destinations",
+    image: "/Destination.png"
+  });
+}
 
 export default async function DestinationsPage({
   params
@@ -24,13 +48,11 @@ export default async function DestinationsPage({
   const data = await getHomepageData(locale as Locale);
 
   return (
-    <main className="page-shell">
+    <main id="main-content" className="page-shell">
       <Header
         locale={locale as Locale}
         data={data.header}
-        destinationsLabel={data.destinations.navLabel}
-        packages={data.tourPackages.items}
-        packagesLabel={data.tourPackages.navLabel}
+        whatsappHref={data.inquiry.whatsappHref}
       />
 
       <section className="section">
@@ -47,10 +69,14 @@ export default async function DestinationsPage({
         </Reveal>
       </section>
 
-      <SignatureDestinations
+      <FeaturedJourneys
+        id="destinations"
         locale={locale as Locale}
-        section={data.destinations}
-        hideHeader
+        eyebrow={data.destinations.eyebrow}
+        heading={data.destinations.heading}
+        intro={data.destinations.intro}
+        items={data.destinations.cards}
+        variant="destinations"
       />
 
       <InquirySection locale={locale as Locale} section={data.inquiry} />

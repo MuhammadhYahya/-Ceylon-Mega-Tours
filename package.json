@@ -8,11 +8,9 @@
     "prebuild": "node scripts/clean-next.mjs",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "eslint . --max-warnings=0"
   },
   "dependencies": {
-    "@sanity/client": "^6.28.0",
-    "groq": "^3.52.1",
     "next": "^15.3.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
