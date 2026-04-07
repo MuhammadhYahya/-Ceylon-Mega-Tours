@@ -30,6 +30,8 @@
 
 .site-header__brand-logo {
   flex: 0 0 auto;
+  width: auto;
+  height: auto;
   border-radius: 999px;
   object-fit: cover;
 }

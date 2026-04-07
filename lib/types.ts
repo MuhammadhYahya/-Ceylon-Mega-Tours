@@ -3,6 +3,8 @@ export type LocalizedString = {
   ru: string;
 };
 
+export type LocalizedValue = LocalizedString;
+
 export type LocalizedRichText = {
   en: string[];
   ru: string[];
@@ -30,6 +32,47 @@ export type ExperienceCard = {
   highlights?: LocalizedString[];
   includes?: LocalizedString[];
   price?: LocalizedString;
+};
+
+export type TourPackageCard = {
+  slug: string;
+  title: LocalizedValue;
+  summary: LocalizedValue;
+  duration: LocalizedValue;
+  image: LocalizedImage;
+  priceLabel?: LocalizedValue;
+  featured?: boolean;
+  sortOrder?: number;
+};
+
+export type TourPackagePlace = {
+  place: LocalizedValue;
+  image?: LocalizedImage;
+  description?: LocalizedRichText;
+};
+
+export type TourPackageAccommodation = {
+  hotel: LocalizedValue;
+  image?: LocalizedImage;
+  description?: LocalizedRichText;
+};
+
+export type TourPackageSection =
+  | {
+      _type: "placesSection";
+      title?: LocalizedValue;
+      items: TourPackagePlace[];
+    }
+  | {
+      _type: "accommodationSection";
+      title?: LocalizedValue;
+      items: TourPackageAccommodation[];
+    };
+
+export type TourPackageDetail = TourPackageCard & {
+  sections: TourPackageSection[];
+  seoTitle?: LocalizedValue;
+  seoDescription?: LocalizedRichText;
 };
 
 export type DestinationCard = {

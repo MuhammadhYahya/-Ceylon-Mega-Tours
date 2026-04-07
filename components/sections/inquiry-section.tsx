@@ -45,7 +45,16 @@ export function InquirySection({
       });
 
       if (!response.ok) {
-        throw new Error("Request failed");
+        const data = (await response.json().catch(() => null)) as { message?: string } | null;
+
+        setState({
+          status: "error",
+          message:
+            response.status >= 500
+              ? pickLocaleText(section.errorMessage, locale)
+              : data?.message || "Please complete the required fields."
+        });
+        return;
       }
 
       setState({
@@ -108,6 +117,7 @@ export function InquirySection({
             <span>{pickLocaleText(section.labels.contact, locale)}</span>
             <input
               required
+              minLength={5}
               value={form.contact}
               onChange={(event) => updateField("contact", event.target.value)}
             />
@@ -164,6 +174,7 @@ export function InquirySection({
             <textarea
               rows={5}
               required
+              minLength={10}
               value={form.message}
               onChange={(event) => updateField("message", event.target.value)}
             />
@@ -188,7 +199,7 @@ export function InquirySection({
                 : pickLocaleText(section.submitLabel, locale)}
             </button>
 
-            {state.message ? (
+            {state.message && state.status !== "loading" ? (
               <p
                 className={`inquiry-form__message inquiry-form__message--${state.status}`}
                 aria-live="polite"

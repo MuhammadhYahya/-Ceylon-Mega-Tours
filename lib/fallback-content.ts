@@ -592,8 +592,8 @@ export const fallbackHomepage: HomepageData = {
       "Спасибо. Ваш запрос успешно отправлен."
     ),
     errorMessage: t(
-      "Something went wrong. Please try again or message us on WhatsApp.",
-      "Что-то пошло не так. Попробуйте еще раз или напишите нам в WhatsApp."
+      "Something went wrong.",
+      "Что-то пошло не так."
     ),
     labels: {
       name: t("Name", "Имя"),

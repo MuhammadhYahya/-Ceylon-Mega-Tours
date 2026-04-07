@@ -10,7 +10,11 @@ type RevealProps = {
 
 export function Reveal({ children, className, delay = 0 }: RevealProps) {
   const ref = useRef<HTMLDivElement | null>(null);
-  const [isVisible, setIsVisible] = useState(false);
+  const [isVisible, setIsVisible] = useState(
+    () =>
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  );
 
   useEffect(() => {
     const node = ref.current;
@@ -18,9 +22,7 @@ export function Reveal({ children, className, delay = 0 }: RevealProps) {
       return;
     }
 
-    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduceMotion) {
-      setIsVisible(true);
+    if (isVisible) {
       return;
     }
 
@@ -37,7 +39,7 @@ export function Reveal({ children, className, delay = 0 }: RevealProps) {
     observer.observe(node);
 
     return () => observer.disconnect();
-  }, []);
+  }, [isVisible]);
 
   return (
     <div

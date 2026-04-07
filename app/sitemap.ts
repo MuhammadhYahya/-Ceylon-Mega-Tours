@@ -1,9 +1,9 @@
 import type { MetadataRoute } from "next";
-import { fallbackHomepage } from "@/lib/fallback-content";
 import { locales } from "@/lib/i18n";
 import { buildAbsoluteUrl, getLocalizedPath } from "@/lib/site";
+import { getAllTourPackageSlugs } from "@/lib/tour-packages";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticPaths = ["", "/destinations", "/tour-packages"];
 
   const staticEntries = locales.flatMap((locale) =>
@@ -15,9 +15,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     }))
   );
 
+  const packageSlugs = await getAllTourPackageSlugs();
+
   const packageEntries = locales.flatMap((locale) =>
-    fallbackHomepage.tourPackages.items.map((item) => ({
-      url: buildAbsoluteUrl(getLocalizedPath(locale, `/tour-packages/${item.id}`)),
+    packageSlugs.map((slug) => ({
+      url: buildAbsoluteUrl(getLocalizedPath(locale, `/tour-packages/${slug}`)),
       lastModified: new Date(),
       changeFrequency: "weekly" as const,
       priority: 0.7

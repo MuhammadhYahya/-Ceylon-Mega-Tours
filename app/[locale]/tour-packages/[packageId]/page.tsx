@@ -6,18 +6,26 @@ import { Header } from "@/components/layout/header";
 import { Drift } from "@/components/motion/drift";
 import { Reveal } from "@/components/motion/reveal";
 import { InquirySection } from "@/components/sections/inquiry-section";
+import { TourPackageSections } from "@/components/sections/tour-package-sections";
 import { pickLocaleText } from "@/lib/copy";
-import { fallbackHomepage } from "@/lib/fallback-content";
 import { getHomepageData } from "@/lib/homepage-data";
 import { isLocale, locales, type Locale } from "@/lib/i18n";
 import { createPageMetadata } from "@/lib/site";
+import {
+  getAllTourPackageSlugs,
+  getTourPackageBySlug,
+  getTourPackagesSectionCopy,
+  pickLocalizedParagraphs
+} from "@/lib/tour-packages";
 import { notFound } from "next/navigation";
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
+  const slugs = await getAllTourPackageSlugs();
+
   return locales.flatMap((locale) =>
-    fallbackHomepage.tourPackages.items.map((item) => ({
+    slugs.map((packageId) => ({
       locale,
-      packageId: item.id
+      packageId
     }))
   );
 }
@@ -35,8 +43,7 @@ export async function generateMetadata({
     return {};
   }
 
-  const data = await getHomepageData(locale);
-  const tourPackage = data.tourPackages.items.find((item) => item.id === packageId);
+  const tourPackage = await getTourPackageBySlug(packageId);
 
   if (!tourPackage) {
     return {};
@@ -44,8 +51,12 @@ export async function generateMetadata({
 
   return createPageMetadata({
     locale,
-    title: pickLocaleText(tourPackage.title, locale),
-    description: pickLocaleText(tourPackage.description, locale),
+    title: pickLocaleText(tourPackage.seoTitle || tourPackage.title, locale),
+    description: pickLocalizedParagraphs(
+      tourPackage.seoDescription,
+      locale,
+      pickLocaleText(tourPackage.summary, locale)
+    ).join(" "),
     pathname: `/tour-packages/${packageId}`,
     image: tourPackage.image.src
   });
@@ -63,7 +74,8 @@ export default async function TourPackageDetailPage({
   }
 
   const data = await getHomepageData(locale as Locale);
-  const tourPackage = data.tourPackages.items.find((item) => item.id === packageId);
+  const packageCopy = getTourPackagesSectionCopy();
+  const tourPackage = await getTourPackageBySlug(packageId);
 
   if (!tourPackage) {
     notFound();
@@ -81,11 +93,9 @@ export default async function TourPackageDetailPage({
       />
 
       <section className="section">
-        <div className="container package-detail">
+        <div className="container package-detail package-detail--hero">
           <Reveal className="package-detail__content">
-            <p className="eyebrow">
-              {pickLocaleText(data.tourPackages.pageEyebrow, locale as Locale)}
-            </p>
+            <p className="eyebrow">{pickLocaleText(packageCopy.pageEyebrow, locale as Locale)}</p>
             <h1 className="page-intro__title">
               {pickLocaleText(tourPackage.title, locale as Locale)}
             </h1>
@@ -93,39 +103,15 @@ export default async function TourPackageDetailPage({
               <p className="package-detail__meta">
                 {pickLocaleText(tourPackage.duration, locale as Locale)}
               </p>
-              {tourPackage.price ? (
+              {tourPackage.priceLabel ? (
                 <p className="package-detail__meta package-detail__meta--price">
-                  {pickLocaleText(tourPackage.price, locale as Locale)}
+                  {pickLocaleText(tourPackage.priceLabel, locale as Locale)}
                 </p>
               ) : null}
             </div>
             <p className="page-intro__copy">
-              {pickLocaleText(tourPackage.description, locale as Locale)}
+              {pickLocaleText(tourPackage.summary, locale as Locale)}
             </p>
-            {tourPackage.highlights?.length ? (
-              <div className="package-detail__panel">
-                <h2 className="package-detail__panel-title">
-                  {locale === "en" ? "Itinerary highlights" : "Что входит в маршрут"}
-                </h2>
-                <ul className="package-detail__list">
-                  {tourPackage.highlights.map((item) => (
-                    <li key={item.en}>{pickLocaleText(item, locale as Locale)}</li>
-                  ))}
-                </ul>
-              </div>
-            ) : null}
-            {tourPackage.includes?.length ? (
-              <div className="package-detail__panel">
-                <h2 className="package-detail__panel-title">
-                  {locale === "en" ? "Price includes" : "Цена включает"}
-                </h2>
-                <ul className="package-detail__list">
-                  {tourPackage.includes.map((item) => (
-                    <li key={item.en}>{pickLocaleText(item, locale as Locale)}</li>
-                  ))}
-                </ul>
-              </div>
-            ) : null}
             <div className="button-row">
               <a
                 href={data.inquiry.whatsappHref}
@@ -158,6 +144,12 @@ export default async function TourPackageDetailPage({
               </Drift>
             </div>
           </Reveal>
+        </div>
+      </section>
+
+      <section className="section package-detail__body-section">
+        <div className="container package-detail__body">
+          <TourPackageSections locale={locale as Locale} sections={tourPackage.sections} />
         </div>
       </section>
 

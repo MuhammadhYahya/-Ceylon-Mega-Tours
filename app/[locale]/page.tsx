@@ -10,6 +10,7 @@ import { pickLocaleText } from "@/lib/copy";
 import { getHomepageData } from "@/lib/homepage-data";
 import { isLocale, type Locale } from "@/lib/i18n";
 import { createPageMetadata } from "@/lib/site";
+import { getFeaturedTourPackages, getTourPackagesSectionCopy } from "@/lib/tour-packages";
 import { notFound } from "next/navigation";
 
 export const revalidate = 300;
@@ -49,6 +50,8 @@ export default async function LocaleHomepage({
   }
 
   const data = await getHomepageData(locale as Locale);
+  const packageCopy = getTourPackagesSectionCopy();
+  const featuredPackages = await getFeaturedTourPackages(3);
 
   return (
     <main id="main-content" className="page-shell">
@@ -75,14 +78,13 @@ export default async function LocaleHomepage({
       <FeaturedJourneys
         id="packages"
         locale={locale as Locale}
-        eyebrow={data.tourPackages.previewEyebrow}
-        heading={data.tourPackages.previewHeading}
-        intro={data.tourPackages.previewIntro}
-        items={data.tourPackages.items}
+        eyebrow={packageCopy.previewEyebrow}
+        heading={packageCopy.previewHeading}
+        intro={packageCopy.previewIntro}
+        items={featuredPackages}
         variant="experiences"
-        limit={3}
         action={{
-          label: data.tourPackages.viewAllLabel,
+          label: packageCopy.viewAllLabel,
           href: `/${locale}/tour-packages`
         }}
       />

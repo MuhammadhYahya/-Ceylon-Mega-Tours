@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { sendInquiryEmail } from "@/lib/mailer";
 import { logError, logInfo, logWarn } from "@/lib/logger";
 import type { InquiryFormPayload } from "@/lib/types";
 
@@ -66,6 +67,22 @@ export async function POST(request: Request) {
     }
 
     logInfo("inquiry.received", {
+      hasEmail: Boolean(email),
+      serviceType: body.serviceType,
+      groupSize: body.groupSize
+    });
+
+    await sendInquiryEmail({
+      name,
+      contact,
+      email,
+      arrivalDate: body.arrivalDate.trim(),
+      groupSize: body.groupSize.trim(),
+      serviceType: body.serviceType.trim(),
+      message
+    });
+
+    logInfo("inquiry.email_sent", {
       hasEmail: Boolean(email),
       serviceType: body.serviceType,
       groupSize: body.groupSize

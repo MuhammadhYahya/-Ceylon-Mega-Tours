@@ -7,7 +7,8 @@ import type {
   DestinationCard,
   ExperienceCard,
   LocalizedString,
-  ServiceCard
+  ServiceCard,
+  TourPackageCard
 } from "@/lib/types";
 import "./featured-journeys.css";
 
@@ -16,7 +17,7 @@ type FeaturedJourneysProps = {
   eyebrow: LocalizedString;
   heading: LocalizedString;
   intro: LocalizedString;
-  items: Array<ServiceCard | ExperienceCard | DestinationCard>;
+  items: Array<ServiceCard | ExperienceCard | DestinationCard | TourPackageCard>;
   variant: "services" | "experiences" | "destinations";
   locale: Locale;
   limit?: number;
@@ -60,10 +61,12 @@ export function FeaturedJourneys({
                   : pickLocaleText(item.meta, locale);
 
             const href =
-              variant === "experiences" ? `/${locale}/tour-packages/${item.id}` : null;
+              variant === "experiences"
+                ? `/${locale}/tour-packages/${"slug" in item ? item.slug : item.id}`
+                : null;
 
             return (
-              <Reveal key={item.id} delay={index * 80}>
+              <Reveal key={"slug" in item ? item.slug : item.id} delay={index * 80}>
                 <article className="journey-card">
                   <div className="journey-card__media">
                     <Image
@@ -79,7 +82,7 @@ export function FeaturedJourneys({
                     <p className="journey-card__meta">{meta}</p>
                     <h3 className="journey-card__title">{pickLocaleText(item.title, locale)}</h3>
                     <p className="journey-card__description">
-                      {pickLocaleText(item.description, locale)}
+                      {pickLocaleText("summary" in item ? item.summary : item.description, locale)}
                     </p>
 
                     {href ? (

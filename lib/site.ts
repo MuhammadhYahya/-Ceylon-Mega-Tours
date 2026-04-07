@@ -22,10 +22,20 @@ function normalizeBaseUrl(value?: string) {
 }
 
 export function getSiteUrl() {
+  const configuredSiteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim();
+
+  if (configuredSiteUrl) {
+    return normalizeBaseUrl(configuredSiteUrl);
+  }
+
+  if (process.env.VERCEL_ENV === "production") {
+    throw new Error("NEXT_PUBLIC_SITE_URL must be set for Vercel production deployments.");
+  }
+
   return normalizeBaseUrl(
-    process.env.NEXT_PUBLIC_SITE_URL ??
+    process.env.VERCEL_URL ??
       process.env.VERCEL_PROJECT_PRODUCTION_URL ??
-      process.env.VERCEL_URL
+      "http://localhost:3000"
   );
 }
 
