@@ -120,3 +120,50 @@ git push -u origin main
 - Route metadata and crawl directives live in `app/layout.tsx`, `app/robots.ts`, and `app/sitemap.ts`.
 - The site is static-friendly except for the inquiry API route.
 - Production builds on Vercel require `NEXT_PUBLIC_SITE_URL`; preview deployments can fall back to the deployment URL.
+
+
+
+## 🔐 Future Improvement: Bot Protection (Cloudflare Turnstile)
+
+Currently, the inquiry form uses:
+
+* Honeypot field (basic bot filtering)
+* IP-based rate limiting
+
+To improve security at scale, we plan to integrate Cloudflare Turnstile for advanced bot protection.
+
+### Why it’s not enabled now
+
+* Prioritizing conversion rate during early-stage launch
+* Avoiding unnecessary friction for users
+* Current traffic volume is low and manageable
+
+### Planned Implementation
+
+* Add Turnstile widget to inquiry form (invisible mode)
+* Send token with form submission
+* Verify token in API route before processing inquiry
+
+### Benefits (when enabled)
+
+* Prevent automated spam submissions
+* Protect API from abuse
+* Improve data quality for inquiries
+
+### Environment Variables (for future use)
+
+```env
+NEXT_PUBLIC_TURNSTILE_SITE_KEY=
+TURNSTILE_SECRET_KEY=
+```
+
+### Notes
+
+* Integration code structure is already prepared
+* Can be enabled anytime without major refactor
+
+
+
+
+
+also found a issu when i select previes date on form the ui retun plese fill requrd field

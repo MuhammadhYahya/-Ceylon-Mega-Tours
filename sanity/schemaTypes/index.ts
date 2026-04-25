@@ -1,5 +1,35 @@
 import { defineArrayMember, defineField, defineType } from "sanity";
 
+const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+const junkContentPattern = /\b(test(?:ing)?|yahya|pecheg|russion)\b/i;
+
+type LocalizedValue = {
+  en?: string;
+  ru?: string;
+};
+
+function trimValue(value?: string) {
+  return value?.trim() || "";
+}
+
+function hasDistinctTranslations(value?: LocalizedValue) {
+  const en = trimValue(value?.en);
+  const ru = trimValue(value?.ru);
+  return Boolean(en && ru && en !== ru);
+}
+
+function hasBothTranslations(value?: LocalizedValue) {
+  return Boolean(trimValue(value?.en) && trimValue(value?.ru));
+}
+
+function hasJunkContent(values: Array<string | undefined>) {
+  return values.some((value) => junkContentPattern.test(trimValue(value)));
+}
+
+function hasMeaningfulAlt(value?: LocalizedValue) {
+  return trimValue(value?.en).length >= 5 && trimValue(value?.ru).length >= 5;
+}
+
 const localizedString = defineType({
   name: "localizedString",
   title: "Localized String",
@@ -40,6 +70,26 @@ const localizedText = defineType({
   ]
 });
 
+const localizedStringList = defineType({
+  name: "localizedStringList",
+  title: "Localized String List",
+  type: "object",
+  fields: [
+    defineField({
+      name: "en",
+      title: "English",
+      type: "array",
+      of: [defineArrayMember({ type: "string" })]
+    }),
+    defineField({
+      name: "ru",
+      title: "Russian",
+      type: "array",
+      of: [defineArrayMember({ type: "string" })]
+    })
+  ]
+});
+
 const coverImage = defineType({
   name: "coverImage",
   title: "Cover Image",
@@ -54,14 +104,18 @@ const coverImage = defineType({
     defineField({
       name: "fallbackSrc",
       title: "Fallback image path",
-      type: "string",
-      description: "Used during rollout before Sanity image assets are uploaded."
+      type: "string"
     }),
     defineField({
       name: "alt",
       title: "Alt text",
       type: "localizedString",
-      validation: (rule) => rule.required()
+      validation: (rule) =>
+        rule.required().custom((value) =>
+          hasMeaningfulAlt(value as LocalizedValue)
+            ? true
+            : "Add meaningful alt text in English and Russian."
+        )
     })
   ],
   preview: {
@@ -86,14 +140,12 @@ const itineraryStop = defineType({
     defineField({
       name: "description",
       title: "Description",
-      type: "localizedText",
-      description: "Optional short note about this stop."
+      type: "localizedText"
     }),
     defineField({
       name: "image",
       title: "Image",
-      type: "coverImage",
-      description: "Optional relevant image for this stop."
+      type: "coverImage"
     })
   ],
   preview: {
@@ -119,14 +171,12 @@ const packagePanelItem = defineType({
     defineField({
       name: "description",
       title: "Description",
-      type: "localizedText",
-      description: "Optional short note shown under the item title."
+      type: "localizedText"
     }),
     defineField({
       name: "image",
       title: "Image",
-      type: "coverImage",
-      description: "Optional image for this panel item."
+      type: "coverImage"
     })
   ],
   preview: {
@@ -134,67 +184,8 @@ const packagePanelItem = defineType({
       title: "title.en",
       subtitle: "title.ru",
       media: "image.image"
-    },
-    prepare({ title, subtitle, media }) {
-      return {
-        title,
-        subtitle: media ? `${subtitle || ""}${subtitle ? " - " : ""}Image added` : subtitle,
-        media
-      };
     }
   }
-});
-
-const highlightsList = defineType({
-  name: "highlightsList",
-  title: "Highlights List",
-  type: "object",
-  fields: [
-    defineField({
-      name: "title",
-      title: "Panel Title",
-      type: "localizedString"
-    }),
-    defineField({
-      name: "items",
-      title: "Items",
-      type: "array",
-      of: [
-        defineArrayMember({ type: "packagePanelItem" }),
-        defineArrayMember({
-          type: "localizedString",
-          title: "Legacy text item"
-        })
-      ],
-      validation: (rule) => rule.min(1).required()
-    })
-  ]
-});
-
-const includesList = defineType({
-  name: "includesList",
-  title: "Includes List",
-  type: "object",
-  fields: [
-    defineField({
-      name: "title",
-      title: "Panel Title",
-      type: "localizedString"
-    }),
-    defineField({
-      name: "items",
-      title: "Items",
-      type: "array",
-      of: [
-        defineArrayMember({ type: "packagePanelItem" }),
-        defineArrayMember({
-          type: "localizedString",
-          title: "Legacy text item"
-        })
-      ],
-      validation: (rule) => rule.min(1).required()
-    })
-  ]
 });
 
 const placesSection = defineType({
@@ -231,14 +222,12 @@ const accommodationItem = defineType({
     defineField({
       name: "description",
       title: "Description",
-      type: "localizedText",
-      description: "Optional short note about this accommodation."
+      type: "localizedText"
     }),
     defineField({
       name: "image",
       title: "Image",
-      type: "coverImage",
-      description: "Optional hotel or room image."
+      type: "coverImage"
     })
   ],
   preview: {
@@ -289,24 +278,35 @@ const richTextSection = defineType({
   ]
 });
 
-const ctaNote = defineType({
-  name: "ctaNote",
-  title: "CTA Note",
-  type: "object",
-  fields: [
-    defineField({
-      name: "title",
-      title: "Section Title",
-      type: "localizedString"
-    }),
-    defineField({
-      name: "body",
-      title: "Body",
-      type: "localizedText",
-      validation: (rule) => rule.required()
-    })
-  ]
-});
+function createPanelSection(
+  name: "highlightsSection" | "includesSection" | "excludesSection" | "idealForSection",
+  title: string
+) {
+  return defineType({
+    name,
+    title,
+    type: "object",
+    fields: [
+      defineField({
+        name: "title",
+        title: "Section Title",
+        type: "localizedString"
+      }),
+      defineField({
+        name: "items",
+        title: "Items",
+        type: "array",
+        of: [defineArrayMember({ type: "packagePanelItem" })],
+        validation: (rule) => rule.min(1).required()
+      })
+    ]
+  });
+}
+
+const highlightsSection = createPanelSection("highlightsSection", "Highlights");
+const includesSection = createPanelSection("includesSection", "Includes");
+const excludesSection = createPanelSection("excludesSection", "Excludes");
+const idealForSection = createPanelSection("idealForSection", "Ideal For");
 
 const tourPackage = defineType({
   name: "tourPackage",
@@ -327,7 +327,14 @@ const tourPackage = defineType({
         source: "title.en",
         maxLength: 96
       },
-      validation: (rule) => rule.required()
+      validation: (rule) =>
+        rule
+          .required()
+          .custom((value) =>
+            slugPattern.test(value?.current || "") && !junkContentPattern.test(value?.current || "")
+              ? true
+              : "Use a clean lowercase slug with hyphens only and no test content."
+          )
     }),
     defineField({
       name: "summary",
@@ -337,9 +344,74 @@ const tourPackage = defineType({
     }),
     defineField({
       name: "duration",
-      title: "Duration",
+      title: "Duration Label",
       type: "localizedString",
       validation: (rule) => rule.required()
+    }),
+    defineField({
+      name: "durationDays",
+      title: "Duration in Days",
+      type: "number",
+      validation: (rule) => rule.required().min(1)
+    }),
+    defineField({
+      name: "category",
+      title: "Category",
+      type: "string",
+      options: {
+        list: [
+          { title: "Adventure", value: "adventure" },
+          { title: "Wildlife", value: "wildlife" },
+          { title: "Cultural", value: "cultural" },
+          { title: "Coastal", value: "coastal" },
+          { title: "Hills", value: "hills" },
+          { title: "Multi-Day", value: "multiday" }
+        ]
+      },
+      validation: (rule) => rule.required()
+    }),
+    defineField({
+      name: "difficulty",
+      title: "Difficulty",
+      type: "string",
+      options: {
+        list: [
+          { title: "Easy", value: "easy" },
+          { title: "Moderate", value: "moderate" },
+          { title: "Active", value: "active" }
+        ]
+      },
+      validation: (rule) => rule.required()
+    }),
+    defineField({
+      name: "location",
+      title: "Location",
+      type: "localizedString",
+      validation: (rule) => rule.required()
+    }),
+    defineField({
+      name: "bestTime",
+      title: "Best Time",
+      type: "localizedString",
+      validation: (rule) => rule.required()
+    }),
+    defineField({
+      name: "languages",
+      title: "Guide Languages",
+      type: "array",
+      of: [defineArrayMember({ type: "localizedString" })],
+      validation: (rule) =>
+        rule.min(1).required().custom((value) =>
+          Array.isArray(value) &&
+          value.every((item) => hasBothTranslations(item as LocalizedValue))
+            ? true
+            : "Each guide language must be localized for both English and Russian."
+        )
+    }),
+    defineField({
+      name: "badge",
+      title: "Badge",
+      type: "localizedString"
     }),
     defineField({
       name: "priceLabel",
@@ -356,7 +428,71 @@ const tourPackage = defineType({
       name: "featured",
       title: "Featured on homepage",
       type: "boolean",
-      initialValue: true
+      initialValue: false
+    }),
+    defineField({
+      name: "publishReady",
+      title: "Publish Ready",
+      type: "boolean",
+      initialValue: false,
+      validation: (rule) =>
+        rule.required().custom((value, context) => {
+          if (!value) {
+            return true;
+          }
+
+          const document = context.document as
+            | {
+                title?: LocalizedValue;
+                summary?: LocalizedValue;
+                duration?: LocalizedValue;
+                location?: LocalizedValue;
+                coverImage?: { alt?: LocalizedValue };
+                category?: string;
+                durationDays?: number;
+                slug?: { current?: string };
+              }
+            | undefined;
+
+          const hasLocalizedCoreCopy =
+            hasDistinctTranslations(document?.title) &&
+            hasDistinctTranslations(document?.summary) &&
+            hasDistinctTranslations(document?.duration) &&
+            hasDistinctTranslations(document?.location);
+
+          if (!hasLocalizedCoreCopy) {
+            return "Publish-ready tours need distinct English and Russian core copy.";
+          }
+
+          if (!hasMeaningfulAlt(document?.coverImage?.alt)) {
+            return "Publish-ready tours need meaningful cover image alt text.";
+          }
+
+          if (
+            hasJunkContent([
+              document?.title?.en,
+              document?.title?.ru,
+              document?.summary?.en,
+              document?.summary?.ru,
+              document?.location?.en,
+              document?.location?.ru,
+              document?.coverImage?.alt?.en,
+              document?.coverImage?.alt?.ru
+            ])
+          ) {
+            return "Remove test or placeholder copy before publishing.";
+          }
+
+          if (document?.durationDays === 1 && document.category === "multiday") {
+            return "One-day tours cannot be published as Multi-Day.";
+          }
+
+          if ((document?.durationDays || 0) > 1 && document?.category && document.category !== "multiday") {
+            return "Multi-day tours must use the Multi-Day category.";
+          }
+
+          return true;
+        })
     }),
     defineField({
       name: "sortOrder",
@@ -369,7 +505,12 @@ const tourPackage = defineType({
       title: "Flexible sections",
       type: "array",
       of: [
+        defineArrayMember({ type: "richTextSection" }),
         defineArrayMember({ type: "placesSection" }),
+        defineArrayMember({ type: "highlightsSection" }),
+        defineArrayMember({ type: "includesSection" }),
+        defineArrayMember({ type: "excludesSection" }),
+        defineArrayMember({ type: "idealForSection" }),
         defineArrayMember({ type: "accommodationSection" })
       ]
     }),
@@ -382,6 +523,11 @@ const tourPackage = defineType({
       name: "seoDescription",
       title: "SEO Description",
       type: "localizedText"
+    }),
+    defineField({
+      name: "seoKeywords",
+      title: "SEO Keywords",
+      type: "localizedStringList"
     })
   ],
   orderings: [
@@ -400,18 +546,48 @@ const tourPackage = defineType({
   }
 });
 
+const websiteInquiry = defineType({
+  name: "websiteInquiry",
+  title: "Website Inquiry",
+  type: "document",
+  readOnly: true,
+  fields: [
+    defineField({ name: "status", title: "Status", type: "string" }),
+    defineField({ name: "name", title: "Name", type: "string" }),
+    defineField({ name: "contact", title: "Contact", type: "string" }),
+    defineField({ name: "email", title: "Email", type: "string" }),
+    defineField({ name: "arrivalDate", title: "Arrival Date", type: "string" }),
+    defineField({ name: "groupSize", title: "Group Size", type: "string" }),
+    defineField({ name: "serviceType", title: "Service Type", type: "string" }),
+    defineField({ name: "message", title: "Message", type: "text", rows: 6 }),
+    defineField({ name: "submittedAt", title: "Submitted At", type: "datetime" }),
+    defineField({ name: "emailedAt", title: "Emailed At", type: "datetime" }),
+    defineField({ name: "emailError", title: "Email Error", type: "text", rows: 3 }),
+    defineField({ name: "sourceIp", title: "Source IP", type: "string" })
+  ],
+  preview: {
+    select: {
+      title: "name",
+      subtitle: "serviceType"
+    }
+  }
+});
+
 export const schemaTypes = [
   localizedString,
   localizedText,
+  localizedStringList,
   coverImage,
   itineraryStop,
   packagePanelItem,
-  highlightsList,
-  includesList,
   placesSection,
   accommodationItem,
   accommodationSection,
   richTextSection,
-  ctaNote,
-  tourPackage
+  highlightsSection,
+  includesSection,
+  excludesSection,
+  idealForSection,
+  tourPackage,
+  websiteInquiry
 ];

@@ -5,7 +5,8 @@ export default function robots(): MetadataRoute.Robots {
   return {
     rules: {
       userAgent: "*",
-      allow: "/"
+      allow: "/",
+      disallow: ["/studio"]
     },
     sitemap: buildAbsoluteUrl("/sitemap.xml")
   };

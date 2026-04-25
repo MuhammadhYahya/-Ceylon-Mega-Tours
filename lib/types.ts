@@ -10,6 +10,11 @@ export type LocalizedRichText = {
   ru: string[];
 };
 
+export type LocalizedStringList = {
+  en: string[];
+  ru: string[];
+};
+
 export type LocalizedImage = {
   src: string;
   alt: LocalizedString;
@@ -40,10 +45,27 @@ export type TourPackageCard = {
   summary: LocalizedValue;
   duration: LocalizedValue;
   image: LocalizedImage;
+  category?: TourPackageCategory;
+  difficulty?: TourPackageDifficulty;
+  durationDays?: number;
+  location?: LocalizedValue;
+  bestTime?: LocalizedValue;
+  languages?: LocalizedValue[];
+  badge?: LocalizedValue;
   priceLabel?: LocalizedValue;
   featured?: boolean;
   sortOrder?: number;
 };
+
+export type TourPackageCategory =
+  | "adventure"
+  | "wildlife"
+  | "cultural"
+  | "coastal"
+  | "hills"
+  | "multiday";
+
+export type TourPackageDifficulty = "easy" | "moderate" | "active";
 
 export type TourPackagePlace = {
   place: LocalizedValue;
@@ -53,6 +75,12 @@ export type TourPackagePlace = {
 
 export type TourPackageAccommodation = {
   hotel: LocalizedValue;
+  image?: LocalizedImage;
+  description?: LocalizedRichText;
+};
+
+export type TourPackagePanelItem = {
+  title: LocalizedValue;
   image?: LocalizedImage;
   description?: LocalizedRichText;
 };
@@ -67,12 +95,23 @@ export type TourPackageSection =
       _type: "accommodationSection";
       title?: LocalizedValue;
       items: TourPackageAccommodation[];
+    }
+  | {
+      _type: "richTextSection";
+      title?: LocalizedValue;
+      body: LocalizedRichText;
+    }
+  | {
+      _type: "highlightsSection" | "includesSection" | "excludesSection" | "idealForSection";
+      title?: LocalizedValue;
+      items: TourPackagePanelItem[];
     };
 
 export type TourPackageDetail = TourPackageCard & {
   sections: TourPackageSection[];
   seoTitle?: LocalizedValue;
   seoDescription?: LocalizedRichText;
+  seoKeywords?: LocalizedStringList;
 };
 
 export type DestinationCard = {
@@ -133,6 +172,7 @@ export type InquiryFormPayload = {
   serviceType: string;
   message: string;
   company?: string;
+  turnstileToken?: string;
 };
 
 export type HomepageData = {

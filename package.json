@@ -8,7 +8,9 @@
     "prebuild": "node scripts/clean-next.mjs",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint . --max-warnings=0"
+    "lint": "eslint . --max-warnings=0",
+    "seed:tours": "node scripts/seed-tour-packages.mjs",
+    "seed:tours:write": "node scripts/seed-tour-packages.mjs --write"
   },
   "dependencies": {
     "@types/nodemailer": "^8.0.0",

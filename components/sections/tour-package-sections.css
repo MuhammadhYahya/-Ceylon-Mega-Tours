@@ -1,0 +1,108 @@
+.tour-detail-sections {
+  display: grid;
+  gap: 1rem;
+}
+
+.tour-detail-panel {
+  display: grid;
+  gap: 1rem;
+  padding: 1.2rem;
+  border-radius: var(--radius-xl);
+  background:
+    linear-gradient(180deg, rgba(255, 252, 246, 0.96), rgba(248, 243, 235, 0.9));
+  border: 1px solid rgba(23, 51, 58, 0.08);
+  box-shadow: var(--shadow-soft);
+}
+
+.tour-detail-panel__heading {
+  margin: 0;
+  font-size: 0.84rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted-strong);
+}
+
+.tour-detail-richtext,
+.tour-detail-timeline__body,
+.tour-detail-item-card__body {
+  display: grid;
+  gap: 0.75rem;
+  color: var(--muted);
+  line-height: 1.8;
+}
+
+.tour-detail-richtext p,
+.tour-detail-timeline__body p,
+.tour-detail-item-card__body p {
+  margin: 0;
+}
+
+.tour-detail-timeline {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.tour-detail-timeline__item {
+  display: grid;
+  grid-template-columns: 2.7rem minmax(0, 1fr);
+  gap: 0.85rem;
+  align-items: start;
+}
+
+.tour-detail-timeline__index {
+  display: grid;
+  place-items: center;
+  width: 2.3rem;
+  height: 2.3rem;
+  border-radius: 999px;
+  background: linear-gradient(180deg, var(--accent) 0%, var(--accent-strong) 100%);
+  color: white;
+  font-weight: 800;
+}
+
+.tour-detail-timeline__copy {
+  display: grid;
+  gap: 0.45rem;
+  padding-top: 0.18rem;
+}
+
+.tour-detail-timeline__copy h3,
+.tour-detail-item-card h3 {
+  margin: 0;
+  color: var(--surface-ink);
+  font-size: 1.1rem;
+}
+
+.tour-detail-grid {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.tour-detail-item-card {
+  display: grid;
+  gap: 0.55rem;
+  padding: 1rem;
+  border-radius: 1.2rem;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(23, 51, 58, 0.08);
+}
+
+.tour-detail-item-card__eyebrow {
+  margin: 0;
+  color: var(--gold);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+@media (min-width: 900px) {
+  .tour-detail-panel {
+    padding: 1.45rem;
+  }
+
+  .tour-detail-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

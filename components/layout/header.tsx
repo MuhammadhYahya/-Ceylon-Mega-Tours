@@ -19,7 +19,11 @@ export function Header({ locale, data, whatsappHref }: HeaderProps) {
   const [isOpen, setIsOpen] = useState(false);
   const menuLabel = locale === "en" ? "Toggle navigation" : "Открыть меню";
   const navigation = data.navigation.map((item) => ({
-    href: item.href.startsWith("#") ? `/${locale}${item.href}` : item.href,
+    href: item.href.startsWith("http")
+      ? item.href
+      : item.href.startsWith("#") || item.href.startsWith("/")
+        ? `/${locale}${item.href}`
+        : item.href,
     label: pickLocaleText(item.label, locale)
   }));
 

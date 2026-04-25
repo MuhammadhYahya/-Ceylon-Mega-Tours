@@ -1,0 +1,208 @@
+.tour-detail {
+  padding-bottom: 0;
+}
+
+.tour-detail__breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-bottom: 1rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.tour-detail__hero {
+  display: grid;
+  overflow: hidden;
+  border-radius: var(--radius-xl);
+  background:
+    radial-gradient(circle at top right, color-mix(in srgb, var(--tour-accent) 28%, transparent), transparent 30%),
+    linear-gradient(180deg, #142b31 0%, #0f2024 100%);
+  box-shadow: var(--shadow-strong);
+}
+
+.tour-detail__hero-copy {
+  display: grid;
+  gap: 1rem;
+  padding: 1.5rem;
+  color: #f7f3ea;
+}
+
+.tour-detail__eyebrow {
+  margin: 0;
+  color: rgba(233, 201, 147, 0.9);
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.tour-detail__hero-copy h1 {
+  margin: 0;
+  font-family: var(--font-heading), serif;
+  font-size: clamp(2.7rem, 7vw, 5rem);
+  line-height: 0.94;
+  letter-spacing: -0.05em;
+}
+
+.tour-detail__summary {
+  margin: 0;
+  max-width: 54ch;
+  color: rgba(247, 243, 234, 0.8);
+  line-height: 1.8;
+}
+
+.tour-detail__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.tour-detail__meta span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2rem;
+  padding: 0.25rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.tour-detail__hero-media {
+  position: relative;
+  min-height: 20rem;
+}
+
+.tour-detail__hero-image {
+  object-fit: cover;
+}
+
+.tour-detail__body {
+  display: grid;
+  gap: 1rem;
+}
+
+.tour-detail__content {
+  min-width: 0;
+}
+
+.tour-detail__sidebar {
+  display: grid;
+  gap: 1rem;
+}
+
+.tour-detail__sidebar-card {
+  display: grid;
+  gap: 0.75rem;
+  padding: 1.2rem;
+  border-radius: var(--radius-xl);
+  background:
+    linear-gradient(180deg, rgba(255, 252, 246, 0.96), rgba(248, 243, 235, 0.9));
+  border: 1px solid rgba(23, 51, 58, 0.08);
+  box-shadow: var(--shadow-soft);
+}
+
+.tour-detail__sidebar-card h2,
+.tour-detail__sidebar-card p,
+.tour-detail__sidebar-card span,
+.tour-detail__facts dt,
+.tour-detail__facts dd {
+  margin: 0;
+}
+
+.tour-detail__sidebar-card--cta {
+  background:
+    radial-gradient(circle at top right, rgba(184, 149, 93, 0.2), transparent 34%),
+    linear-gradient(180deg, #17363b 0%, #10272c 100%);
+  color: #f7f3ea;
+}
+
+.tour-detail__sidebar-card--cta p {
+  color: rgba(247, 243, 234, 0.72);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.tour-detail__sidebar-card--cta h2 {
+  font-family: var(--font-heading), serif;
+  font-size: 2.3rem;
+  line-height: 0.95;
+}
+
+.tour-detail__sidebar-card--cta span {
+  color: rgba(247, 243, 234, 0.74);
+  line-height: 1.8;
+}
+
+.tour-detail__facts {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.tour-detail__facts div {
+  display: grid;
+  gap: 0.2rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid rgba(23, 51, 58, 0.08);
+}
+
+.tour-detail__facts div:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.tour-detail__facts dt {
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.tour-detail__facts dd {
+  color: var(--surface-ink);
+  font-weight: 700;
+}
+
+.tour-detail__tag-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.tour-detail__tag-row span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2rem;
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(23, 51, 58, 0.07);
+  color: var(--muted-strong);
+  font-weight: 700;
+}
+
+@media (min-width: 960px) {
+  .tour-detail__hero {
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  }
+
+  .tour-detail__hero-copy {
+    padding: 2rem;
+  }
+
+  .tour-detail__body {
+    grid-template-columns: minmax(0, 1.2fr) minmax(18rem, 0.8fr);
+    align-items: start;
+  }
+
+  .tour-detail__sidebar {
+    position: sticky;
+    top: 6rem;
+  }
+}

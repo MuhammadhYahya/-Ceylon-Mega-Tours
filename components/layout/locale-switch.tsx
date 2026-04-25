@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { getOppositeLocale, isLocale, type Locale } from "@/lib/i18n";
 
 type LocaleSwitchProps = {
@@ -11,7 +11,6 @@ type LocaleSwitchProps = {
 export function LocaleSwitch({ locale, className }: LocaleSwitchProps) {
   const router = useRouter();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
   const nextLocale = getOppositeLocale(locale);
 
   function handleSwitch() {
@@ -29,9 +28,9 @@ export function LocaleSwitch({ locale, className }: LocaleSwitchProps) {
     }
 
     const nextPath = `/${segments.join("/")}`;
-    const query = searchParams.toString();
+    const query = window.location.search;
     const hash = window.location.hash;
-    router.push(`${nextPath}${query ? `?${query}` : ""}${hash}`);
+    router.push(`${nextPath}${query}${hash}`);
   }
 
   return (

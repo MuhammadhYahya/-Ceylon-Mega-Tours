@@ -57,13 +57,15 @@ export const viewport: Viewport = {
   themeColor: "#17363b"
 };
 
-export default function RootLayout({
+export function DocumentShell({
+  lang,
   children
 }: Readonly<{
+  lang: string;
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ru">
+    <html lang={lang}>
       <body className={`${headingFont.variable} ${bodyFont.variable}`}>
         <a href="#main-content" className="skip-link">
           Skip to content

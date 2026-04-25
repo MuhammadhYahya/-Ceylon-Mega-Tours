@@ -67,3 +67,26 @@ export async function sendInquiryEmail(input: InquiryMailInput) {
     text: buildInquiryText(input)
   });
 }
+
+function wait(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+export async function sendInquiryEmailWithRetry(input: InquiryMailInput, attempts = 3) {
+  let lastError: unknown;
+
+  for (let attempt = 1; attempt <= attempts; attempt += 1) {
+    try {
+      await sendInquiryEmail(input);
+      return;
+    } catch (error) {
+      lastError = error;
+
+      if (attempt < attempts) {
+        await wait(250 * attempt);
+      }
+    }
+  }
+
+  throw lastError;
+}

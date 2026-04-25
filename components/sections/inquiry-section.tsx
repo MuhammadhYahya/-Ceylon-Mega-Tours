@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
+// import { TurnstileWidget } from "@/components/forms/turnstile-widget";
 import { Reveal } from "@/components/motion/reveal";
 import { pickLocaleText } from "@/lib/copy";
 import type { Locale } from "@/lib/i18n";
@@ -20,7 +21,8 @@ const initialForm: InquiryFormPayload = {
   groupSize: "",
   serviceType: "",
   message: "",
-  company: ""
+  company: "",
+  turnstileToken: ""
 };
 
 export function InquirySection({
@@ -30,11 +32,42 @@ export function InquirySection({
   locale: Locale;
   section: HomepageData["inquiry"];
 }) {
+  // const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY?.trim() || "";
   const [form, setForm] = useState(initialForm);
   const [state, setState] = useState<InquiryState>({ status: "idle", message: "" });
+  const [turnstileResetKey, setTurnstileResetKey] = useState(0);
+
+  const invalidFieldsMessage =
+    locale === "en"
+      ? "Please complete the required fields."
+      : "Пожалуйста, заполните обязательные поля.";
+  const invalidEmailMessage =
+    locale === "en"
+      ? "Please enter a valid email address."
+      : "Пожалуйста, введите корректный адрес электронной почты.";
+  const invalidCaptchaMessage =
+    locale === "en"
+      ? "Please confirm you are human and try again."
+      : "Подтвердите, что вы не робот, и попробуйте снова.";
+  const rateLimitMessage =
+    locale === "en"
+      ? "Too many inquiries. Please wait a few minutes and try again."
+      : "Слишком много запросов. Пожалуйста, подождите несколько минут.";
+  const sendingLabel = locale === "en" ? "Sending..." : "Отправка...";
+  const humanLabel = locale === "en" ? "Spam protection" : "Защита от спама";
+
+  // const handleTurnstileChange = useCallback((token: string) => {
+  //   setForm((current) => ({ ...current, turnstileToken: token }));
+  // }, []);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    // if (turnstileSiteKey && !form.turnstileToken) {
+    //   setState({ status: "error", message: invalidCaptchaMessage });
+    //   return;
+    // }
+
     setState({ status: "loading", message: "" });
 
     try {
@@ -52,7 +85,13 @@ export function InquirySection({
           message:
             response.status >= 500
               ? pickLocaleText(section.errorMessage, locale)
-              : data?.message || "Please complete the required fields."
+              : response.status === 429
+                ? rateLimitMessage
+                : data?.message === "Please confirm you are human and try again."
+                  ? invalidCaptchaMessage
+                  : data?.message === "Please enter a valid email address."
+                    ? invalidEmailMessage
+                    : invalidFieldsMessage
         });
         return;
       }
@@ -62,6 +101,7 @@ export function InquirySection({
         message: pickLocaleText(section.successMessage, locale)
       });
       setForm(initialForm);
+      setTurnstileResetKey((value) => value + 1);
     } catch {
       setState({
         status: "error",
@@ -180,6 +220,7 @@ export function InquirySection({
             />
           </label>
 
+  
           <label className="sr-only" aria-hidden="true">
             Company
             <input
@@ -192,11 +233,7 @@ export function InquirySection({
 
           <div className="inquiry-form__actions">
             <button type="submit" className="button-primary" disabled={state.status === "loading"}>
-              {state.status === "loading"
-                ? locale === "en"
-                  ? "Sending..."
-                  : "Отправка..."
-                : pickLocaleText(section.submitLabel, locale)}
+              {state.status === "loading" ? sendingLabel : pickLocaleText(section.submitLabel, locale)}
             </button>
 
             {state.message && state.status !== "loading" ? (

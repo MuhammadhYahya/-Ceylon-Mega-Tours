@@ -16,7 +16,7 @@ export function Footer({ locale, data }: FooterProps) {
   const links = [
     { label: locale === "en" ? "About Me" : "Обо мне", href: `/${locale}#about` },
     { label: locale === "en" ? "Services" : "Услуги", href: `/${locale}#services` },
-    { label: locale === "en" ? "Packages" : "Пакеты", href: `/${locale}#packages` },
+    { label: locale === "en" ? "Packages" : "Пакеты", href: `/${locale}/tour-packages` },
     { label: locale === "en" ? "Destinations" : "Направления", href: `/${locale}#destinations` },
     { label: locale === "en" ? "Reviews" : "Отзывы", href: `/${locale}#reviews` },
     { label: locale === "en" ? "Enquiry" : "Запрос", href: `/${locale}#inquiry` }

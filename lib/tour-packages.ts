@@ -1,15 +1,18 @@
 import { groq } from "next-sanity";
 import { fallbackHomepage } from "@/lib/fallback-content";
+import { TOUR_CATALOG_FALLBACK } from "@/lib/tour-catalog";
 import type { Locale } from "@/lib/i18n";
 import { getSanityClient } from "@/lib/sanity/client";
 import type {
   LocalizedRichText,
   LocalizedString,
-  TourPackageCard,
+  LocalizedStringList,
   TourPackageAccommodation,
+  TourPackageCard,
   TourPackageDetail,
+  TourPackagePanelItem,
   TourPackagePlace,
-  TourPackageSection,
+  TourPackageSection
 } from "@/lib/types";
 
 type SanityLocalizedValue = {
@@ -17,10 +20,21 @@ type SanityLocalizedValue = {
   ru?: string | null;
 };
 
+type SanityLocalizedList = {
+  en?: string[] | null;
+  ru?: string[] | null;
+};
+
 type SanityCoverImage = {
   url?: string | null;
   fallbackSrc?: string | null;
   alt?: SanityLocalizedValue | null;
+};
+
+type SanityPanelItem = {
+  title?: SanityLocalizedValue | null;
+  description?: SanityLocalizedValue | null;
+  image?: SanityCoverImage | null;
 };
 
 type SanityTourPackageSection =
@@ -41,6 +55,16 @@ type SanityTourPackageSection =
         description?: SanityLocalizedValue | null;
         image?: SanityCoverImage | null;
       }> | null;
+    }
+  | {
+      _type: "richTextSection";
+      title?: SanityLocalizedValue | null;
+      body?: SanityLocalizedValue | null;
+    }
+  | {
+      _type: "highlightsSection" | "includesSection" | "excludesSection" | "idealForSection";
+      title?: SanityLocalizedValue | null;
+      items?: SanityPanelItem[] | null;
     };
 
 type SanityTourPackageDocument = {
@@ -48,12 +72,21 @@ type SanityTourPackageDocument = {
   title?: SanityLocalizedValue | null;
   summary?: SanityLocalizedValue | null;
   duration?: SanityLocalizedValue | null;
+  durationDays?: number | null;
+  category?: TourPackageDetail["category"] | null;
+  difficulty?: TourPackageDetail["difficulty"] | null;
+  location?: SanityLocalizedValue | null;
+  bestTime?: SanityLocalizedValue | null;
+  languages?: SanityLocalizedValue[] | null;
+  badge?: SanityLocalizedValue | null;
   priceLabel?: SanityLocalizedValue | null;
   coverImage?: SanityCoverImage | null;
   featured?: boolean | null;
   sortOrder?: number | null;
+  publishReady?: boolean | null;
   seoTitle?: SanityLocalizedValue | null;
   seoDescription?: SanityLocalizedValue | null;
+  seoKeywords?: SanityLocalizedList | null;
   sections?: SanityTourPackageSection[] | null;
 };
 
@@ -63,9 +96,17 @@ const LIST_QUERY = groq`
     title,
     summary,
     duration,
+    durationDays,
+    category,
+    difficulty,
+    location,
+    bestTime,
+    languages,
+    badge,
     priceLabel,
     featured,
     sortOrder,
+    publishReady,
     coverImage {
       fallbackSrc,
       alt,
@@ -80,11 +121,20 @@ const DETAIL_QUERY = groq`
     title,
     summary,
     duration,
+    durationDays,
+    category,
+    difficulty,
+    location,
+    bestTime,
+    languages,
+    badge,
     priceLabel,
     featured,
     sortOrder,
+    publishReady,
     seoTitle,
     seoDescription,
+    seoKeywords,
     coverImage {
       fallbackSrc,
       alt,
@@ -93,36 +143,97 @@ const DETAIL_QUERY = groq`
     sections[] {
       _type,
       title,
-      "items": select(
-        _type == "placesSection" => items[]{
-          place,
-          description,
-          image {
-            fallbackSrc,
-            alt,
-            "url": image.asset->url
-          }
-        },
-        _type == "accommodationSection" => items[]{
-          hotel,
-          description,
-          image {
-            fallbackSrc,
-            alt,
-            "url": image.asset->url
-          }
-        },
-        items
-      )
+      body,
+      items[] {
+        title,
+        description,
+        hotel,
+        place,
+        image {
+          fallbackSrc,
+          alt,
+          "url": image.asset->url
+        }
+      }
     }
   }
 `;
 
-const SLUGS_QUERY = groq`
-  *[_type == "tourPackage" && defined(slug.current)] | order(coalesce(sortOrder, 999) asc) {
-    "slug": slug.current
-  }
+const COUNT_QUERY = groq`
+  count(*[_type == "tourPackage"])
 `;
+
+const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+const junkContentPattern = /\b(test(?:ing)?|yahya|pecheg|russion)\b/i;
+
+function isNonEmptyText(value?: string | null) {
+  return Boolean(value?.trim());
+}
+
+function hasDistinctRussianCopy(value?: LocalizedString) {
+  if (!value) {
+    return false;
+  }
+
+  return isNonEmptyText(value.ru) && value.ru.trim() !== value.en.trim();
+}
+
+function containsJunkContent(values: Array<string | undefined>) {
+  return values.some((value) => value && junkContentPattern.test(value));
+}
+
+function hasMeaningfulImageAlt(image?: TourPackageDetail["image"]) {
+  return Boolean(image?.alt.en.trim() && image.alt.ru.trim() && image.alt.en.trim().length >= 5);
+}
+
+function isPublishReadyPackage(item: TourPackageDetail, explicitPublishReady?: boolean | null) {
+  const searchableStrings = [
+    item.slug,
+    item.title.en,
+    item.title.ru,
+    item.summary.en,
+    item.summary.ru,
+    item.location?.en,
+    item.location?.ru,
+    item.image.alt.en,
+    item.image.alt.ru
+  ];
+
+  if (!slugPattern.test(item.slug)) {
+    return false;
+  }
+
+  if (!isNonEmptyText(item.title.en) || !isNonEmptyText(item.summary.en) || !hasMeaningfulImageAlt(item.image)) {
+    return false;
+  }
+
+  if (containsJunkContent(searchableStrings)) {
+    return false;
+  }
+
+  if (item.durationDays && item.durationDays > 1 && item.category && item.category !== "multiday") {
+    return false;
+  }
+
+  if (item.durationDays === 1 && item.category === "multiday") {
+    return false;
+  }
+
+  return explicitPublishReady !== false;
+}
+
+function isLocalizedForLocale(item: TourPackageDetail, locale: Locale) {
+  if (locale === "en") {
+    return true;
+  }
+
+  return (
+    hasDistinctRussianCopy(item.title) &&
+    hasDistinctRussianCopy(item.summary) &&
+    hasDistinctRussianCopy(item.duration) &&
+    Boolean(item.location ? hasDistinctRussianCopy(item.location) : true)
+  );
+}
 
 function toLocalizedString(
   value: SanityLocalizedValue | null | undefined,
@@ -134,22 +245,38 @@ function toLocalizedString(
   };
 }
 
-function toLocalizedRichText(value: SanityLocalizedValue | null | undefined): LocalizedRichText {
+function toLocalizedStringList(
+  value: SanityLocalizedList | null | undefined,
+  fallback?: LocalizedStringList
+): LocalizedStringList {
+  return {
+    en: (value?.en || fallback?.en || []).filter(Boolean),
+    ru: (value?.ru || fallback?.ru || []).filter(Boolean)
+  };
+}
+
+function toLocalizedRichText(
+  value: SanityLocalizedValue | null | undefined,
+  fallback?: LocalizedRichText
+): LocalizedRichText {
   const splitParagraphs = (input?: string | null) =>
     (input || "")
       .split(/\r?\n\r?\n/)
       .map((paragraph) => paragraph.trim())
       .filter(Boolean);
 
+  const en = splitParagraphs(value?.en);
+  const ru = splitParagraphs(value?.ru);
+
   return {
-    en: splitParagraphs(value?.en),
-    ru: splitParagraphs(value?.ru)
+    en: en.length ? en : fallback?.en || [],
+    ru: ru.length ? ru : fallback?.ru || []
   };
 }
 
 function toImage(
   value: SanityCoverImage | null | undefined,
-  fallback?: { src: string; alt: LocalizedString }
+  fallback?: TourPackageDetail["image"]
 ) {
   return {
     src: value?.url || value?.fallbackSrc || fallback?.src || "/hero.png",
@@ -157,49 +284,42 @@ function toImage(
   };
 }
 
-function mapFallbackPackage(
-  item: (typeof fallbackHomepage.tourPackages.items)[number],
-  index: number
-): TourPackageDetail {
-  const sections: TourPackageSection[] = [];
-
-  if (item.highlights?.length) {
-    sections.push({
-      _type: "placesSection",
-      title: {
-        en: "Places you'll visit",
-        ru: "Mesta, kotorye vy posetite"
-      },
-      items: item.highlights.map((highlight) => ({
-        place: highlight
-      }))
-    });
+function mapPanelItem(
+  item: SanityPanelItem,
+  fallback?: TourPackagePanelItem
+): TourPackagePanelItem | null {
+  if (!item.title && !fallback?.title) {
+    return null;
   }
 
   return {
-    slug: item.id,
-    title: item.title,
-    summary: item.description,
-    duration: item.duration,
-    priceLabel: item.price,
-    image: item.image,
-    featured: index < 3,
-    sortOrder: index,
-    sections
+    title: toLocalizedString(item.title, fallback?.title),
+    description: item.description
+      ? toLocalizedRichText(item.description, fallback?.description)
+      : fallback?.description,
+    image: item.image ? toImage(item.image, fallback?.image as TourPackageDetail["image"]) : fallback?.image
   };
 }
 
-function mapSanitySection(section: SanityTourPackageSection): TourPackageSection | null {
+function mapSanitySection(
+  section: SanityTourPackageSection,
+  fallback?: TourPackageSection
+): TourPackageSection | null {
   if (section._type === "placesSection") {
-    const items = (section.items || []).reduce<TourPackagePlace[]>((acc, item) => {
-      if (!item?.place) {
+    const items = (section.items || []).reduce<TourPackagePlace[]>((acc, item, index) => {
+      const fallbackItem =
+        fallback?._type === "placesSection" ? fallback.items[index] : undefined;
+
+      if (!item?.place && !fallbackItem?.place) {
         return acc;
       }
 
       acc.push({
-        place: toLocalizedString(item.place),
-        description: item.description ? toLocalizedRichText(item.description) : undefined,
-        image: item.image ? toImage(item.image) : undefined
+        place: toLocalizedString(item.place, fallbackItem?.place),
+        description: item.description
+          ? toLocalizedRichText(item.description, fallbackItem?.description)
+          : fallbackItem?.description,
+        image: item.image ? toImage(item.image, fallbackItem?.image as TourPackageDetail["image"]) : fallbackItem?.image
       });
 
       return acc;
@@ -207,21 +327,34 @@ function mapSanitySection(section: SanityTourPackageSection): TourPackageSection
 
     return {
       _type: "placesSection",
-      title: section.title ? toLocalizedString(section.title) : undefined,
+      title:
+        section.title || (fallback?._type === "placesSection" && fallback.title)
+          ? toLocalizedString(
+              section.title,
+              fallback?._type === "placesSection" ? fallback.title : undefined
+            )
+          : undefined,
       items
     };
   }
 
   if (section._type === "accommodationSection") {
-    const items = (section.items || []).reduce<TourPackageAccommodation[]>((acc, item) => {
-      if (!item?.hotel) {
+    const items = (section.items || []).reduce<TourPackageAccommodation[]>((acc, item, index) => {
+      const fallbackItem =
+        fallback?._type === "accommodationSection" ? fallback.items[index] : undefined;
+
+      const hotelValue = "hotel" in item ? item.hotel : undefined;
+
+      if (!hotelValue && !fallbackItem?.hotel) {
         return acc;
       }
 
       acc.push({
-        hotel: toLocalizedString(item.hotel),
-        description: item.description ? toLocalizedRichText(item.description) : undefined,
-        image: item.image ? toImage(item.image) : undefined
+        hotel: toLocalizedString(hotelValue, fallbackItem?.hotel),
+        description: item.description
+          ? toLocalizedRichText(item.description, fallbackItem?.description)
+          : fallbackItem?.description,
+        image: item.image ? toImage(item.image, fallbackItem?.image as TourPackageDetail["image"]) : fallbackItem?.image
       });
 
       return acc;
@@ -229,12 +362,63 @@ function mapSanitySection(section: SanityTourPackageSection): TourPackageSection
 
     return {
       _type: "accommodationSection",
-      title: section.title ? toLocalizedString(section.title) : undefined,
+      title:
+        section.title || (fallback?._type === "accommodationSection" && fallback.title)
+          ? toLocalizedString(
+              section.title,
+              fallback?._type === "accommodationSection" ? fallback.title : undefined
+            )
+          : undefined,
       items
     };
   }
 
-  return null;
+  if (section._type === "richTextSection") {
+    return {
+      _type: "richTextSection",
+      title:
+        section.title || (fallback?._type === "richTextSection" && fallback.title)
+          ? toLocalizedString(
+              section.title,
+              fallback?._type === "richTextSection" ? fallback.title : undefined
+            )
+          : undefined,
+      body: toLocalizedRichText(
+        section.body,
+        fallback?._type === "richTextSection" ? fallback.body : undefined
+      )
+    };
+  }
+
+  const items = (section.items || []).reduce<TourPackagePanelItem[]>((acc, item, index) => {
+    const fallbackItem =
+      fallback &&
+      (fallback._type === section._type) &&
+      "items" in fallback
+        ? fallback.items[index]
+        : undefined;
+
+    const mapped = mapPanelItem(item, fallbackItem);
+
+    if (mapped) {
+      acc.push(mapped);
+    }
+
+    return acc;
+  }, []);
+
+  return {
+    _type: section._type,
+    title: toLocalizedString(
+      section.title,
+      fallback &&
+        fallback._type === section._type &&
+        "title" in fallback
+        ? fallback.title
+        : undefined
+    ),
+    items
+  };
 }
 
 function mapSanityPackage(
@@ -245,8 +429,9 @@ function mapSanityPackage(
     return fallback || null;
   }
 
+  const fallbackSections = fallback?.sections || [];
   const sections = (item.sections || [])
-    .map(mapSanitySection)
+    .map((section, index) => mapSanitySection(section, fallbackSections[index]))
     .filter((section): section is TourPackageSection => Boolean(section));
 
   return {
@@ -254,20 +439,30 @@ function mapSanityPackage(
     title: toLocalizedString(item.title, fallback?.title),
     summary: toLocalizedString(item.summary, fallback?.summary),
     duration: toLocalizedString(item.duration, fallback?.duration),
+    durationDays: item.durationDays ?? fallback?.durationDays,
+    category: item.category ?? fallback?.category,
+    difficulty: item.difficulty ?? fallback?.difficulty,
+    location: item.location ? toLocalizedString(item.location, fallback?.location) : fallback?.location,
+    bestTime: item.bestTime ? toLocalizedString(item.bestTime, fallback?.bestTime) : fallback?.bestTime,
+    languages: (item.languages || fallback?.languages || []).map((language, index) =>
+      toLocalizedString(language, fallback?.languages?.[index])
+    ),
+    badge: item.badge ? toLocalizedString(item.badge, fallback?.badge) : fallback?.badge,
+    image: toImage(item.coverImage, fallback?.image),
     priceLabel: item.priceLabel
       ? toLocalizedString(item.priceLabel, fallback?.priceLabel)
       : fallback?.priceLabel,
-    image: toImage(item.coverImage, fallback?.image),
-    featured: item.featured ?? fallback?.featured ?? true,
+    featured: item.featured ?? fallback?.featured ?? false,
     sortOrder: item.sortOrder ?? fallback?.sortOrder,
     sections: sections.length ? sections : fallback?.sections || [],
-    seoTitle: item.seoTitle ? toLocalizedString(item.seoTitle) : undefined,
-    seoDescription: item.seoDescription ? toLocalizedRichText(item.seoDescription) : undefined
+    seoTitle: item.seoTitle ? toLocalizedString(item.seoTitle, fallback?.seoTitle) : fallback?.seoTitle,
+    seoDescription: item.seoDescription
+      ? toLocalizedRichText(item.seoDescription, fallback?.seoDescription)
+      : fallback?.seoDescription,
+    seoKeywords: item.seoKeywords
+      ? toLocalizedStringList(item.seoKeywords, fallback?.seoKeywords)
+      : fallback?.seoKeywords
   };
-}
-
-function getFallbackTourPackageDetails() {
-  return fallbackHomepage.tourPackages.items.map(mapFallbackPackage);
 }
 
 function toCard(item: TourPackageDetail): TourPackageCard {
@@ -276,6 +471,13 @@ function toCard(item: TourPackageDetail): TourPackageCard {
     title: item.title,
     summary: item.summary,
     duration: item.duration,
+    durationDays: item.durationDays,
+    category: item.category,
+    difficulty: item.difficulty,
+    location: item.location,
+    bestTime: item.bestTime,
+    languages: item.languages,
+    badge: item.badge,
     image: item.image,
     priceLabel: item.priceLabel,
     featured: item.featured,
@@ -283,65 +485,99 @@ function toCard(item: TourPackageDetail): TourPackageCard {
   };
 }
 
+function getVisiblePackage(
+  item: TourPackageDetail | null,
+  locale: Locale,
+  explicitPublishReady?: boolean | null
+) {
+  if (!item) {
+    return null;
+  }
+
+  if (!isPublishReadyPackage(item, explicitPublishReady) || !isLocalizedForLocale(item, locale)) {
+    return null;
+  }
+
+  return item;
+}
+
 export function getTourPackagesSectionCopy() {
   return fallbackHomepage.tourPackages;
 }
 
-export async function getTourPackages(): Promise<TourPackageCard[]> {
-  const fallback = getFallbackTourPackageDetails();
+export function getTourPackageFallbackDetails() {
+  return TOUR_CATALOG_FALLBACK;
+}
+
+export async function getTourPackages(locale: Locale = "en"): Promise<TourPackageCard[]> {
+  const fallback = getTourPackageFallbackDetails();
   const client = getSanityClient();
 
   if (!client) {
-    return fallback.map(toCard);
+    return fallback
+      .map((item) => getVisiblePackage(item, locale))
+      .filter((item): item is TourPackageDetail => Boolean(item))
+      .map(toCard);
   }
 
   try {
     const items = await client.fetch<SanityTourPackageDocument[]>(LIST_QUERY);
 
     if (!items.length) {
-      return fallback.map(toCard);
+      return fallback
+        .map((item) => getVisiblePackage(item, locale))
+        .filter((item): item is TourPackageDetail => Boolean(item))
+        .map(toCard);
     }
 
     return items
-      .map((item) =>
-        mapSanityPackage(item, fallback.find((fallbackItem) => fallbackItem.slug === item.slug))
-      )
+      .map((item) => getVisiblePackage(mapSanityPackage(item), locale, item.publishReady))
       .filter((item): item is TourPackageDetail => Boolean(item))
       .map(toCard);
   } catch {
-    return fallback.map(toCard);
+    return fallback
+      .map((item) => getVisiblePackage(item, locale))
+      .filter((item): item is TourPackageDetail => Boolean(item))
+      .map(toCard);
   }
 }
 
-export async function getFeaturedTourPackages(limit = 3): Promise<TourPackageCard[]> {
-  const items = await getTourPackages();
+export async function getFeaturedTourPackages(limit = 3, locale: Locale = "en"): Promise<TourPackageCard[]> {
+  const items = await getTourPackages(locale);
   const featured = items.filter((item) => item.featured);
   return (featured.length ? featured : items).slice(0, limit);
 }
 
-export async function getTourPackageBySlug(slug: string): Promise<TourPackageDetail | null> {
-  const fallback = getFallbackTourPackageDetails().find((item) => item.slug === slug) || null;
+export async function getTourPackageBySlug(
+  slug: string,
+  locale: Locale = "en"
+): Promise<TourPackageDetail | null> {
+  const fallback = getTourPackageFallbackDetails().find((item) => item.slug === slug) || null;
   const client = getSanityClient();
 
   if (!client) {
-    return fallback;
+    return getVisiblePackage(fallback, locale);
   }
 
   try {
     const item = await client.fetch<SanityTourPackageDocument | null>(DETAIL_QUERY, { slug });
 
-    if (!item) {
-      return fallback;
+    if (item) {
+      return getVisiblePackage(mapSanityPackage(item), locale, item.publishReady);
     }
 
-    return mapSanityPackage(item, fallback || undefined);
+    const count = await client.fetch<number>(COUNT_QUERY);
+    return count === 0 ? getVisiblePackage(fallback, locale) : null;
   } catch {
-    return fallback;
+    return getVisiblePackage(fallback, locale);
   }
 }
 
-export async function getAllTourPackageSlugs(): Promise<string[]> {
-  const fallback = getFallbackTourPackageDetails().map((item) => item.slug);
+export async function getAllTourPackageSlugs(locale: Locale = "en"): Promise<string[]> {
+  const fallback = getTourPackageFallbackDetails()
+    .map((item) => getVisiblePackage(item, locale))
+    .filter((item): item is TourPackageDetail => Boolean(item))
+    .map((item) => item.slug);
   const client = getSanityClient();
 
   if (!client) {
@@ -349,8 +585,11 @@ export async function getAllTourPackageSlugs(): Promise<string[]> {
   }
 
   try {
-    const items = await client.fetch<Array<{ slug?: string | null }>>(SLUGS_QUERY);
-    const slugs = items.map((item) => item.slug).filter((slug): slug is string => Boolean(slug));
+    const items = await client.fetch<SanityTourPackageDocument[]>(LIST_QUERY);
+    const slugs = items
+      .map((item) => getVisiblePackage(mapSanityPackage(item), locale, item.publishReady))
+      .filter((item): item is TourPackageDetail => Boolean(item))
+      .map((item) => item.slug);
     return slugs.length ? slugs : fallback;
   } catch {
     return fallback;

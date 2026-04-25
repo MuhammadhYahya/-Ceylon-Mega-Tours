@@ -1,27 +1,18 @@
 import { NextResponse } from "next/server";
-import { sendInquiryEmail } from "@/lib/mailer";
+import {
+  consumeInquiryRateLimit,
+  getInquiryIp,
+  isPayload,
+  validateInquiryPayload,
+  // verifyTurnstileToken
+} from "@/lib/inquiry";
+import { persistInquiry, updateInquiryStatus } from "@/lib/inquiry-store";
 import { logError, logInfo, logWarn } from "@/lib/logger";
-import type { InquiryFormPayload } from "@/lib/types";
+import { sendInquiryEmailWithRetry } from "@/lib/mailer";
 
-const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+export const runtime = "nodejs";
+
 const noStoreHeaders = { "Cache-Control": "no-store" };
-
-function isPayload(body: unknown): body is InquiryFormPayload {
-  if (!body || typeof body !== "object") {
-    return false;
-  }
-
-  const value = body as Record<string, unknown>;
-
-  return (
-    typeof value.name === "string" &&
-    typeof value.contact === "string" &&
-    typeof value.arrivalDate === "string" &&
-    typeof value.groupSize === "string" &&
-    typeof value.serviceType === "string" &&
-    typeof value.message === "string"
-  );
-}
 
 export async function POST(request: Request) {
   try {
@@ -41,52 +32,103 @@ export async function POST(request: Request) {
       return NextResponse.json({ ok: true }, { headers: noStoreHeaders });
     }
 
-    const name = body.name.trim();
-    const contact = body.contact.trim();
-    const email = body.email?.trim() ?? "";
-    const message = body.message.trim();
-
-    if (name.length < 2 || contact.length < 5 || message.length < 10) {
-      logWarn("inquiry.validation_failed", {
-        hasName: name.length >= 2,
-        hasContact: contact.length >= 5,
-        hasMessage: message.length >= 10
-      });
+    const ip = getInquiryIp(request);
+    if (!consumeInquiryRateLimit(ip)) {
+      logWarn("inquiry.rate_limited");
       return NextResponse.json(
-        { ok: false, message: "Please complete the required fields." },
+        { ok: false, message: "Too many inquiries. Please wait a few minutes and try again." },
+        { status: 429, headers: noStoreHeaders }
+      );
+    }
+
+    const validation = validateInquiryPayload(body);
+    if (!validation.ok) {
+      logWarn("inquiry.validation_failed");
+      return NextResponse.json(
+        { ok: false, message: validation.message },
         { status: 400, headers: noStoreHeaders }
       );
     }
 
-    if (email && !emailPattern.test(email)) {
-      logWarn("inquiry.invalid_email");
-      return NextResponse.json(
-        { ok: false, message: "Please enter a valid email address." },
-        { status: 400, headers: noStoreHeaders }
-      );
-    }
+    // const isHuman = await verifyTurnstileToken(body.turnstileToken, ip);
+    // if (!isHuman) {
+    //   logWarn("inquiry.turnstile_failed");
+    //   return NextResponse.json(
+    //     { ok: false, message: "Please confirm you are human and try again." },
+    //     { status: 400, headers: noStoreHeaders }
+    //   );
+    // }
+
+    const inquiry = validation.payload;
 
     logInfo("inquiry.received", {
-      hasEmail: Boolean(email),
-      serviceType: body.serviceType,
-      groupSize: body.groupSize
+      hasEmail: Boolean(inquiry.email),
+      serviceType: inquiry.serviceType,
+      groupSize: inquiry.groupSize
     });
 
-    await sendInquiryEmail({
-      name,
-      contact,
-      email,
-      arrivalDate: body.arrivalDate.trim(),
-      groupSize: body.groupSize.trim(),
-      serviceType: body.serviceType.trim(),
-      message
-    });
+    let record = null;
 
-    logInfo("inquiry.email_sent", {
-      hasEmail: Boolean(email),
-      serviceType: body.serviceType,
-      groupSize: body.groupSize
-    });
+    try {
+      record = await persistInquiry({
+        ...inquiry,
+        submittedAt: new Date().toISOString(),
+        sourceIp: ip
+      });
+    } catch (error) {
+      logError("inquiry.persist_failed", {
+        message: error instanceof Error ? error.message : "Unknown error"
+      });
+    }
+
+    let emailDelivered = false;
+
+    try {
+      await sendInquiryEmailWithRetry(inquiry);
+      emailDelivered = true;
+      if (record) {
+        try {
+          await updateInquiryStatus(record, "emailed");
+        } catch (error) {
+          logWarn("inquiry.status_update_failed", {
+            message: error instanceof Error ? error.message : "Unknown error"
+          });
+        }
+      }
+    } catch (error) {
+      if (record) {
+        try {
+          await updateInquiryStatus(
+            record,
+            "email_failed",
+            error instanceof Error ? error.message : "Unknown error"
+          );
+        } catch (statusError) {
+          logWarn("inquiry.status_update_failed", {
+            message: statusError instanceof Error ? statusError.message : "Unknown error"
+          });
+        }
+      }
+
+      logError("inquiry.email_failed", {
+        message: error instanceof Error ? error.message : "Unknown error"
+      });
+    }
+
+    if (emailDelivered) {
+      logInfo("inquiry.email_sent", {
+        hasEmail: Boolean(inquiry.email),
+        serviceType: inquiry.serviceType,
+        groupSize: inquiry.groupSize
+      });
+    }
+
+    if (!record && !emailDelivered) {
+      return NextResponse.json(
+        { ok: false, message: "Inquiry delivery failed. Please contact us on WhatsApp." },
+        { status: 503, headers: noStoreHeaders }
+      );
+    }
 
     return NextResponse.json(
       {

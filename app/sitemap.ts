@@ -15,10 +15,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }))
   );
 
-  const packageSlugs = await getAllTourPackageSlugs();
+  const localizedPackageSlugs = await Promise.all(
+    locales.map(async (locale) => ({
+      locale,
+      slugs: await getAllTourPackageSlugs(locale)
+    }))
+  );
 
-  const packageEntries = locales.flatMap((locale) =>
-    packageSlugs.map((slug) => ({
+  const packageEntries = localizedPackageSlugs.flatMap(({ locale, slugs }) =>
+    slugs.map((slug) => ({
       url: buildAbsoluteUrl(getLocalizedPath(locale, `/tour-packages/${slug}`)),
       lastModified: new Date(),
       changeFrequency: "weekly" as const,

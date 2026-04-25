@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Footer } from "@/components/layout/footer";
 import { Reveal } from "@/components/motion/reveal";
+import { JsonLd } from "@/components/seo/json-ld";
 import { Header } from "@/components/layout/header";
 import { FeaturedJourneys } from "@/components/sections/featured-journeys";
 import { InquirySection } from "@/components/sections/inquiry-section";
@@ -8,6 +9,7 @@ import { pickLocaleText } from "@/lib/copy";
 import { getHomepageData } from "@/lib/homepage-data";
 import { isLocale, type Locale } from "@/lib/i18n";
 import { createPageMetadata } from "@/lib/site";
+import { createBreadcrumbJsonLd } from "@/lib/structured-data";
 import { notFound } from "next/navigation";
 
 export const revalidate = 300;
@@ -30,7 +32,7 @@ export async function generateMetadata({
     title: locale === "ru" ? "Направления по Шри-Ланке" : "Sri Lanka Destinations",
     description: pickLocaleText(data.destinations.pageIntro, locale),
     pathname: "/destinations",
-    image: "/Destination.png"
+    image: "/sigiriya.jpg"
   });
 }
 
@@ -49,6 +51,12 @@ export default async function DestinationsPage({
 
   return (
     <main id="main-content" className="page-shell">
+      <JsonLd
+        data={createBreadcrumbJsonLd(locale as Locale, [
+          { name: locale === "en" ? "Home" : "Главная", path: "" },
+          { name: locale === "en" ? "Destinations" : "Направления", path: "/destinations" }
+        ])}
+      />
       <Header
         locale={locale as Locale}
         data={data.header}

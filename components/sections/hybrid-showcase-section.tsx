@@ -59,7 +59,7 @@ export function HybridShowcaseSection({
           <Link href={`/${locale}/tour-packages`} className="button-primary">
             {pickLocaleText(section.primaryCta, locale)}
           </Link>
-          <Link href={`/${locale}#inquiry`} className="button-ghost">
+          <Link href="#inquiry" className="button-ghost">
             {pickLocaleText(section.secondaryCta, locale)}
           </Link>
         </Reveal>

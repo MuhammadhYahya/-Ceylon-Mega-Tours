@@ -10,8 +10,10 @@ import { pickLocaleText } from "@/lib/copy";
 import { getHomepageData } from "@/lib/homepage-data";
 import { isLocale, type Locale } from "@/lib/i18n";
 import { createPageMetadata } from "@/lib/site";
+import { createBreadcrumbJsonLd } from "@/lib/structured-data";
 import { getFeaturedTourPackages, getTourPackagesSectionCopy } from "@/lib/tour-packages";
 import { notFound } from "next/navigation";
+import { JsonLd } from "@/components/seo/json-ld";
 
 export const revalidate = 300;
 
@@ -51,10 +53,15 @@ export default async function LocaleHomepage({
 
   const data = await getHomepageData(locale as Locale);
   const packageCopy = getTourPackagesSectionCopy();
-  const featuredPackages = await getFeaturedTourPackages(3);
+  const featuredPackages = await getFeaturedTourPackages(3, locale as Locale);
 
   return (
     <main id="main-content" className="page-shell">
+      <JsonLd
+        data={createBreadcrumbJsonLd(locale as Locale, [
+          { name: locale === "en" ? "Home" : "Главная", path: "" }
+        ])}
+      />
       <Header
         locale={locale as Locale}
         data={data.header}

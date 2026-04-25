@@ -39,8 +39,7 @@ export function FeaturedJourneys({
   action
 }: FeaturedJourneysProps) {
   const visibleItems = typeof limit === "number" ? items.slice(0, limit) : items;
-  const detailLabel =
-    locale === "en" ? "Open package" : "Открыть пакет";
+  const detailLabel = locale === "en" ? "Open package" : "Открыть пакет";
 
   return (
     <section id={id} className="section">
