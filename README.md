@@ -7,7 +7,7 @@ A bilingual Next.js tourism website for a Sri Lanka private tour brand, prepared
 - Russian-first localized routing with English toggle
 - Home, destinations, tour packages, and package detail pages
 - WhatsApp-first conversion flow
-- Curated Google Business Profile review summary + testimonial cards
+- Curated Google Business Profile review summary and testimonial cards
 - Inquiry API route with validation and production-safe logging
 - Route-level loading skeletons, metadata, robots, and sitemap generation
 
@@ -43,14 +43,14 @@ npm run build
 Create a `.env.local` file from `.env.example`.
 
 ```bash
-NEXT_PUBLIC_SITE_URL=http://localhost:3000
+NEXT_PUBLIC_SITE_URL=https://www.ceylonmegatours.com
 NEXT_PUBLIC_SANITY_PROJECT_ID=your-project-id
 NEXT_PUBLIC_SANITY_DATASET=production
 NEXT_PUBLIC_SANITY_API_VERSION=2025-07-01
-ENABLE_STUDIO=true
+ENABLE_STUDIO=false
 ```
 
-Production should set `NEXT_PUBLIC_SITE_URL` to the final public domain so canonical URLs, sitemap, and robots metadata resolve correctly. On Vercel, keep `ENABLE_STUDIO=true` for preview / staging and set `ENABLE_STUDIO=false` for production so `/studio` is hidden on the public site.
+Production should set `NEXT_PUBLIC_SITE_URL` to the final public domain so canonical URLs, sitemap, and robots metadata resolve correctly. For the current launch, use `https://www.ceylonmegatours.com`. On Vercel, keep `ENABLE_STUDIO=true` only for preview / staging and set `ENABLE_STUDIO=false` for production so `/studio` is hidden on the public site.
 
 ## Project Structure
 
@@ -91,7 +91,7 @@ node scripts/seed-tour-packages.mjs
 5. Preview / staging env vars:
    `NEXT_PUBLIC_SANITY_PROJECT_ID`, `NEXT_PUBLIC_SANITY_DATASET`, `NEXT_PUBLIC_SANITY_API_VERSION`, `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM`, `ENABLE_STUDIO=true`
 6. Production env vars:
-   same as preview, plus `NEXT_PUBLIC_SITE_URL=https://your-domain.com` and `ENABLE_STUDIO=false`
+   same as preview, plus `NEXT_PUBLIC_SITE_URL=https://www.ceylonmegatours.com` and `ENABLE_STUDIO=false`
 7. Validate the hosted deployment before attaching the live custom domain.
 
 ### Generic Node Deployment
@@ -117,53 +117,7 @@ git push -u origin main
 ## Notes
 
 - The inquiry endpoint is `app/api/inquiry/route.ts`.
-- Route metadata and crawl directives live in `app/layout.tsx`, `app/robots.ts`, and `app/sitemap.ts`.
+- Route metadata and crawl directives live in `app/document-shell.tsx`, `app/robots.ts`, and `app/sitemap.ts`.
 - The site is static-friendly except for the inquiry API route.
-- Production builds on Vercel require `NEXT_PUBLIC_SITE_URL`; preview deployments can fall back to the deployment URL.
-
-
-
-## 🔐 Future Improvement: Bot Protection (Cloudflare Turnstile)
-
-Currently, the inquiry form uses:
-
-* Honeypot field (basic bot filtering)
-* IP-based rate limiting
-
-To improve security at scale, we plan to integrate Cloudflare Turnstile for advanced bot protection.
-
-### Why it’s not enabled now
-
-* Prioritizing conversion rate during early-stage launch
-* Avoiding unnecessary friction for users
-* Current traffic volume is low and manageable
-
-### Planned Implementation
-
-* Add Turnstile widget to inquiry form (invisible mode)
-* Send token with form submission
-* Verify token in API route before processing inquiry
-
-### Benefits (when enabled)
-
-* Prevent automated spam submissions
-* Protect API from abuse
-* Improve data quality for inquiries
-
-### Environment Variables (for future use)
-
-```env
-NEXT_PUBLIC_TURNSTILE_SITE_KEY=
-TURNSTILE_SECRET_KEY=
-```
-
-### Notes
-
-* Integration code structure is already prepared
-* Can be enabled anytime without major refactor
-
-
-
-
-
-also found a issu when i select previes date on form the ui retun plese fill requrd field
+- Production builds use `NEXT_PUBLIC_SITE_URL` when present and otherwise fall back to the current Vercel production URL.
+- Rotate `SMTP_PASS` in the deployment provider before final launch if it was shared outside the secrets manager.

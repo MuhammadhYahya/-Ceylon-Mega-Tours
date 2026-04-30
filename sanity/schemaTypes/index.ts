@@ -573,6 +573,87 @@ const websiteInquiry = defineType({
   }
 });
 
+const websiteReview = defineType({
+  name: "websiteReview",
+  title: "Website Review",
+  type: "document",
+  fields: [
+    defineField({
+      name: "status",
+      title: "Status",
+      type: "string",
+      initialValue: "pending",
+      options: {
+        list: [
+          { title: "Pending", value: "pending" },
+          { title: "Approved", value: "approved" },
+          { title: "Rejected", value: "rejected" }
+        ],
+        layout: "radio"
+      },
+      validation: (rule) => rule.required()
+    }),
+    defineField({
+      name: "name",
+      title: "Guest Name",
+      type: "string",
+      validation: (rule) => rule.required().min(2).max(80)
+    }),
+    defineField({
+      name: "location",
+      title: "Location",
+      type: "string",
+      validation: (rule) => rule.max(90)
+    }),
+    defineField({
+      name: "rating",
+      title: "Rating",
+      type: "number",
+      validation: (rule) => rule.required().integer().min(1).max(5)
+    }),
+    defineField({
+      name: "message",
+      title: "Review",
+      type: "text",
+      rows: 5,
+      validation: (rule) => rule.required().min(10).max(900)
+    }),
+    defineField({
+      name: "submittedAt",
+      title: "Submitted At",
+      type: "datetime",
+      readOnly: true
+    }),
+    defineField({
+      name: "sourceIp",
+      title: "Source IP",
+      type: "string",
+      readOnly: true
+    })
+  ],
+  orderings: [
+    {
+      title: "Newest first",
+      name: "submittedAtDesc",
+      by: [{ field: "submittedAt", direction: "desc" }]
+    }
+  ],
+  preview: {
+    select: {
+      title: "name",
+      status: "status",
+      rating: "rating"
+    },
+    prepare(selection: { title?: string; status?: string; rating?: number }) {
+      const rating = typeof selection.rating === "number" ? `${selection.rating}/5` : "No rating";
+      return {
+        title: selection.title,
+        subtitle: `${selection.status || "pending"} - ${rating}`
+      };
+    }
+  }
+});
+
 export const schemaTypes = [
   localizedString,
   localizedText,
@@ -589,5 +670,6 @@ export const schemaTypes = [
   excludesSection,
   idealForSection,
   tourPackage,
-  websiteInquiry
+  websiteInquiry,
+  websiteReview
 ];

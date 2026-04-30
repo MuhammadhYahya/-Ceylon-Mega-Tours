@@ -159,9 +159,9 @@ const DETAIL_QUERY = groq`
   }
 `;
 
-const COUNT_QUERY = groq`
-  count(*[_type == "tourPackage"])
-`;
+const sanityFetchOptions = {
+  cache: "no-store" as const
+};
 
 const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const junkContentPattern = /\b(test(?:ing)?|yahya|pecheg|russion)\b/i;
@@ -279,7 +279,7 @@ function toImage(
   fallback?: TourPackageDetail["image"]
 ) {
   return {
-    src: value?.url || value?.fallbackSrc || fallback?.src || "/hero.png",
+    src: value?.url || value?.fallbackSrc || fallback?.src || "/hero.jpg",
     alt: toLocalizedString(value?.alt, fallback?.alt)
   };
 }
@@ -509,11 +509,19 @@ export function getTourPackageFallbackDetails() {
   return TOUR_CATALOG_FALLBACK;
 }
 
+function shouldUseLocalFallback() {
+  return process.env.NODE_ENV !== "production";
+}
+
 export async function getTourPackages(locale: Locale = "en"): Promise<TourPackageCard[]> {
   const fallback = getTourPackageFallbackDetails();
   const client = getSanityClient();
 
   if (!client) {
+    if (!shouldUseLocalFallback()) {
+      return [];
+    }
+
     return fallback
       .map((item) => getVisiblePackage(item, locale))
       .filter((item): item is TourPackageDetail => Boolean(item))
@@ -521,13 +529,14 @@ export async function getTourPackages(locale: Locale = "en"): Promise<TourPackag
   }
 
   try {
-    const items = await client.fetch<SanityTourPackageDocument[]>(LIST_QUERY);
+    const items = await client.fetch<SanityTourPackageDocument[]>(
+      LIST_QUERY,
+      {},
+      sanityFetchOptions
+    );
 
     if (!items.length) {
-      return fallback
-        .map((item) => getVisiblePackage(item, locale))
-        .filter((item): item is TourPackageDetail => Boolean(item))
-        .map(toCard);
+      return [];
     }
 
     return items
@@ -535,6 +544,10 @@ export async function getTourPackages(locale: Locale = "en"): Promise<TourPackag
       .filter((item): item is TourPackageDetail => Boolean(item))
       .map(toCard);
   } catch {
+    if (!shouldUseLocalFallback()) {
+      return [];
+    }
+
     return fallback
       .map((item) => getVisiblePackage(item, locale))
       .filter((item): item is TourPackageDetail => Boolean(item))
@@ -556,19 +569,30 @@ export async function getTourPackageBySlug(
   const client = getSanityClient();
 
   if (!client) {
+    if (!shouldUseLocalFallback()) {
+      return null;
+    }
+
     return getVisiblePackage(fallback, locale);
   }
 
   try {
-    const item = await client.fetch<SanityTourPackageDocument | null>(DETAIL_QUERY, { slug });
+    const item = await client.fetch<SanityTourPackageDocument | null>(
+      DETAIL_QUERY,
+      { slug },
+      sanityFetchOptions
+    );
 
     if (item) {
       return getVisiblePackage(mapSanityPackage(item), locale, item.publishReady);
     }
 
-    const count = await client.fetch<number>(COUNT_QUERY);
-    return count === 0 ? getVisiblePackage(fallback, locale) : null;
+    return null;
   } catch {
+    if (!shouldUseLocalFallback()) {
+      return null;
+    }
+
     return getVisiblePackage(fallback, locale);
   }
 }
@@ -581,17 +605,29 @@ export async function getAllTourPackageSlugs(locale: Locale = "en"): Promise<str
   const client = getSanityClient();
 
   if (!client) {
+    if (!shouldUseLocalFallback()) {
+      return [];
+    }
+
     return fallback;
   }
 
   try {
-    const items = await client.fetch<SanityTourPackageDocument[]>(LIST_QUERY);
+    const items = await client.fetch<SanityTourPackageDocument[]>(
+      LIST_QUERY,
+      {},
+      sanityFetchOptions
+    );
     const slugs = items
       .map((item) => getVisiblePackage(mapSanityPackage(item), locale, item.publishReady))
       .filter((item): item is TourPackageDetail => Boolean(item))
       .map((item) => item.slug);
-    return slugs.length ? slugs : fallback;
+    return slugs;
   } catch {
+    if (!shouldUseLocalFallback()) {
+      return [];
+    }
+
     return fallback;
   }
 }

@@ -1,7 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
-// import { TurnstileWidget } from "@/components/forms/turnstile-widget";
+import { useState } from "react";
 import { Reveal } from "@/components/motion/reveal";
 import { pickLocaleText } from "@/lib/copy";
 import type { Locale } from "@/lib/i18n";
@@ -21,9 +20,16 @@ const initialForm: InquiryFormPayload = {
   groupSize: "",
   serviceType: "",
   message: "",
-  company: "",
-  turnstileToken: ""
+  company: ""
 };
+
+function getTodayInputValue() {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, "0");
+  const day = String(today.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
 
 export function InquirySection({
   locale,
@@ -32,10 +38,9 @@ export function InquirySection({
   locale: Locale;
   section: HomepageData["inquiry"];
 }) {
-  // const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY?.trim() || "";
   const [form, setForm] = useState(initialForm);
   const [state, setState] = useState<InquiryState>({ status: "idle", message: "" });
-  const [turnstileResetKey, setTurnstileResetKey] = useState(0);
+  const todayInputValue = getTodayInputValue();
 
   const invalidFieldsMessage =
     locale === "en"
@@ -45,28 +50,26 @@ export function InquirySection({
     locale === "en"
       ? "Please enter a valid email address."
       : "Пожалуйста, введите корректный адрес электронной почты.";
-  const invalidCaptchaMessage =
+  const invalidGroupSizeMessage =
     locale === "en"
-      ? "Please confirm you are human and try again."
-      : "Подтвердите, что вы не робот, и попробуйте снова.";
+      ? "Please provide a valid group size."
+      : "Пожалуйста, укажите корректный размер группы.";
+  const invalidServiceTypeMessage =
+    locale === "en"
+      ? "Please choose a valid service type."
+      : "Пожалуйста, выберите корректный тип услуги.";
+  const invalidFutureDateMessage =
+    locale === "en"
+      ? "Please choose a future arrival date."
+      : "Пожалуйста, выберите будущую дату прибытия.";
   const rateLimitMessage =
     locale === "en"
       ? "Too many inquiries. Please wait a few minutes and try again."
       : "Слишком много запросов. Пожалуйста, подождите несколько минут.";
   const sendingLabel = locale === "en" ? "Sending..." : "Отправка...";
-  const humanLabel = locale === "en" ? "Spam protection" : "Защита от спама";
-
-  // const handleTurnstileChange = useCallback((token: string) => {
-  //   setForm((current) => ({ ...current, turnstileToken: token }));
-  // }, []);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-
-    // if (turnstileSiteKey && !form.turnstileToken) {
-    //   setState({ status: "error", message: invalidCaptchaMessage });
-    //   return;
-    // }
 
     setState({ status: "loading", message: "" });
 
@@ -87,11 +90,15 @@ export function InquirySection({
               ? pickLocaleText(section.errorMessage, locale)
               : response.status === 429
                 ? rateLimitMessage
-                : data?.message === "Please confirm you are human and try again."
-                  ? invalidCaptchaMessage
-                  : data?.message === "Please enter a valid email address."
-                    ? invalidEmailMessage
-                    : invalidFieldsMessage
+                : data?.message === "Please enter a valid email address."
+                  ? invalidEmailMessage
+                  : data?.message === "Please provide a valid group size."
+                    ? invalidGroupSizeMessage
+                    : data?.message === "Please choose a valid service type."
+                      ? invalidServiceTypeMessage
+                      : data?.message === "Please choose a future arrival date."
+                        ? invalidFutureDateMessage
+                        : invalidFieldsMessage
         });
         return;
       }
@@ -101,7 +108,6 @@ export function InquirySection({
         message: pickLocaleText(section.successMessage, locale)
       });
       setForm(initialForm);
-      setTurnstileResetKey((value) => value + 1);
     } catch {
       setState({
         status: "error",
@@ -177,6 +183,7 @@ export function InquirySection({
             <input
               type="date"
               required
+              min={todayInputValue}
               value={form.arrivalDate}
               onChange={(event) => updateField("arrivalDate", event.target.value)}
             />
@@ -220,7 +227,6 @@ export function InquirySection({
             />
           </label>
 
-  
           <label className="sr-only" aria-hidden="true">
             Company
             <input

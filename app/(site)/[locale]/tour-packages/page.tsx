@@ -12,7 +12,7 @@ import { createBreadcrumbJsonLd } from "@/lib/structured-data";
 import { getTourPackages, getTourPackagesSectionCopy } from "@/lib/tour-packages";
 import { notFound } from "next/navigation";
 
-export const revalidate = 300;
+export const revalidate = 60;
 
 export async function generateMetadata({
   params

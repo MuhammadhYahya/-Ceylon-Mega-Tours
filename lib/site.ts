@@ -11,7 +11,8 @@ export const SITE_KEYWORDS = [
   "airport transfer Sri Lanka",
   "Ceylon Mega Tours"
 ];
-export const DEFAULT_OG_IMAGE = "/hero.png";
+export const DEFAULT_OG_IMAGE = "/hero.jpg";
+export const PRODUCTION_SITE_URL = "https://www.ceylonmegatours.com";
 
 function normalizeBaseUrl(value?: string) {
   if (!value) {
@@ -29,7 +30,7 @@ export function getSiteUrl() {
   }
 
   if (process.env.VERCEL_ENV === "production") {
-    throw new Error("NEXT_PUBLIC_SITE_URL must be set for Vercel production deployments.");
+    return PRODUCTION_SITE_URL;
   }
 
   return normalizeBaseUrl(
@@ -69,13 +70,17 @@ export function createPageMetadata({
   const languages = Object.fromEntries(
     locales.map((value) => [value, getLocalizedPath(value, pathname)])
   );
+  const alternateLanguages = {
+    ...languages,
+    "x-default": getLocalizedPath("ru", pathname)
+  };
 
   return {
     title,
     description,
     alternates: {
       canonical: localizedPath,
-      languages
+      languages: alternateLanguages
     },
     openGraph: {
       title,

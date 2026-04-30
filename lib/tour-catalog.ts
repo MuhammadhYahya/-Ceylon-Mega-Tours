@@ -182,7 +182,7 @@ export const TOUR_CATALOG_FALLBACK: TourPackageDetail[] = [
       bestTime: "November-April",
       badge: "Thrill-Seeker Pick",
       featured: true,
-      image: image("/hero.png", "Sunrise over the Indian Ocean with a fishing boat"),
+      image: image("/hero.jpg", "Sunrise over the Indian Ocean with a fishing boat"),
       seoKeywords: ["deep sea fishing Sri Lanka", "Indian Ocean fishing tour", "tuna fishing Sri Lanka"],
       languages: ["English", "Russian"],
       highlights: [
@@ -213,7 +213,7 @@ export const TOUR_CATALOG_FALLBACK: TourPackageDetail[] = [
       bestTime: "November-April",
       badge: "Most Inclusive",
       featured: true,
-      image: image("/hero.png", "Whale watching boat at sunrise near Mirissa"),
+      image: image("/hero.jpg", "Whale watching boat at sunrise near Mirissa"),
       seoKeywords: ["whale watching Mirissa", "blue whale Sri Lanka", "dolphin watching Sri Lanka"],
       languages: ["English", "Russian"],
       highlights: [
@@ -373,7 +373,7 @@ export const TOUR_CATALOG_FALLBACK: TourPackageDetail[] = [
       difficulty: "easy",
       bestTime: "Year-round",
       badge: "Unique Experience",
-      image: image("/hero.png", "Gemstone market experience in Beruwala"),
+      image: image("/hero.jpg", "Gemstone market experience in Beruwala"),
       seoKeywords: ["Sri Lanka gem market", "buy sapphires Sri Lanka", "Ceylon gems authentic"],
       languages: ["English", "Russian"],
       highlights: [
@@ -462,7 +462,7 @@ export const TOUR_CATALOG_FALLBACK: TourPackageDetail[] = [
       difficulty: "easy",
       bestTime: "Year-round",
       badge: "Best for First Timers",
-      image: image("/hero.png", "Sri Lanka day tour with culture, wildlife, and coast"),
+      image: image("/hero.jpg", "Sri Lanka day tour with culture, wildlife, and coast"),
       seoKeywords: ["best day tour Sri Lanka", "Sri Lanka one day itinerary", "all-inclusive Sri Lanka tour"],
       languages: ["English", "Russian"],
       highlights: [

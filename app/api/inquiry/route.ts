@@ -3,8 +3,7 @@ import {
   consumeInquiryRateLimit,
   getInquiryIp,
   isPayload,
-  validateInquiryPayload,
-  // verifyTurnstileToken
+  validateInquiryPayload
 } from "@/lib/inquiry";
 import { persistInquiry, updateInquiryStatus } from "@/lib/inquiry-store";
 import { logError, logInfo, logWarn } from "@/lib/logger";
@@ -49,15 +48,6 @@ export async function POST(request: Request) {
         { status: 400, headers: noStoreHeaders }
       );
     }
-
-    // const isHuman = await verifyTurnstileToken(body.turnstileToken, ip);
-    // if (!isHuman) {
-    //   logWarn("inquiry.turnstile_failed");
-    //   return NextResponse.json(
-    //     { ok: false, message: "Please confirm you are human and try again." },
-    //     { status: 400, headers: noStoreHeaders }
-    //   );
-    // }
 
     const inquiry = validation.payload;
 

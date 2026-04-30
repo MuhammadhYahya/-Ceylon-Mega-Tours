@@ -42,7 +42,7 @@ export const fallbackHomepage: HomepageData = {
       t("Flexible routes across Sri Lanka", "Гибкие маршруты по всей Шри-Ланке")
     ],
     image: image(
-      "/hero.png",
+      "/hero.jpg",
       "Sri Lanka coast at sunset",
       "Побережье Шри-Ланки на закате"
     )
@@ -522,41 +522,7 @@ export const fallbackHomepage: HomepageData = {
         "Основано на отзывах из Google Business Profile."
       )
     },
-    items: [
-      {
-        id: "review-anna",
-        quote: t(
-          "Everything felt clear from the first WhatsApp message. The airport pickup was smooth, the car was comfortable, and the whole route felt safe and beautifully paced.",
-          "С первого сообщения в WhatsApp все было очень понятно. Встреча в аэропорту прошла идеально, машина была комфортной, а весь маршрут ощущался безопасным и очень хорошо продуманным."
-        ),
-        name: "Anna & Mikhail",
-        location: t("Moscow, Russia", "Москва, Россия"),
-        trip: t("Private south coast trip", "Частная поездка по южному побережью"),
-        rating: 5
-      },
-      {
-        id: "review-irina",
-        quote: t(
-          "Perfect for our family. The schedule was flexible, the long drives never felt tiring, and we always knew what would happen next.",
-          "Идеально для нашей семьи. График был гибким, длинные переезды не утомляли, и мы всегда понимали, что будет дальше."
-        ),
-        name: "Irina Petrova",
-        location: t("Saint Petersburg, Russia", "Санкт-Петербург, Россия"),
-        trip: t("Family highlights route", "Семейный маршрут по главным местам"),
-        rating: 5
-      },
-      {
-        id: "review-james",
-        quote: t(
-          "A rare balance of warmth and professionalism. We had the feeling of private care without any pressure or unnecessary complexity.",
-          "Редкий баланс душевности и профессионализма. Мы чувствовали личную заботу без давления и без лишней сложности."
-        ),
-        name: "James & Elena",
-        location: t("London, United Kingdom", "Лондон, Великобритания"),
-        trip: t("Tea hills and coast package", "Пакет с чайным регионом и побережьем"),
-        rating: 5
-      }
-    ]
+    items: []
   },
   inquiry: {
     eyebrow: t("Enquiry", "Запрос"),

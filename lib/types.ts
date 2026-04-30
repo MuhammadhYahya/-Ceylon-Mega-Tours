@@ -148,6 +148,25 @@ export type TestimonialItem = {
   rating: number;
 };
 
+export type ReviewStatus = "pending" | "approved" | "rejected";
+
+export type GuestReviewItem = {
+  id: string;
+  name: string;
+  location?: string;
+  rating: number;
+  message: string;
+  submittedAt: string;
+};
+
+export type ReviewFormPayload = {
+  name: string;
+  location?: string;
+  rating: number;
+  message: string;
+  company?: string;
+};
+
 export type GoogleReviewsSummary = {
   rating: number;
   reviewCount: number;
@@ -172,7 +191,6 @@ export type InquiryFormPayload = {
   serviceType: string;
   message: string;
   company?: string;
-  turnstileToken?: string;
 };
 
 export type HomepageData = {

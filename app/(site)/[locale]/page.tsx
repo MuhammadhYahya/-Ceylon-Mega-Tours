@@ -9,13 +9,14 @@ import { TestimonialsSection } from "@/components/sections/testimonials-section"
 import { pickLocaleText } from "@/lib/copy";
 import { getHomepageData } from "@/lib/homepage-data";
 import { isLocale, type Locale } from "@/lib/i18n";
+import { getApprovedReviews } from "@/lib/reviews";
 import { createPageMetadata } from "@/lib/site";
 import { createBreadcrumbJsonLd } from "@/lib/structured-data";
 import { getFeaturedTourPackages, getTourPackagesSectionCopy } from "@/lib/tour-packages";
 import { notFound } from "next/navigation";
 import { JsonLd } from "@/components/seo/json-ld";
 
-export const revalidate = 300;
+export const revalidate = 60;
 
 export async function generateMetadata({
   params
@@ -54,6 +55,7 @@ export default async function LocaleHomepage({
   const data = await getHomepageData(locale as Locale);
   const packageCopy = getTourPackagesSectionCopy();
   const featuredPackages = await getFeaturedTourPackages(3, locale as Locale);
+  const approvedReviews = await getApprovedReviews(12);
 
   return (
     <main id="main-content" className="page-shell">
@@ -109,7 +111,11 @@ export default async function LocaleHomepage({
           href: `/${locale}/destinations`
         }}
       />
-      <TestimonialsSection locale={locale as Locale} section={data.testimonials} />
+      <TestimonialsSection
+        locale={locale as Locale}
+        section={data.testimonials}
+        reviews={approvedReviews}
+      />
       <InquirySection locale={locale as Locale} section={data.inquiry} />
       <Footer locale={locale as Locale} data={data.footer} />
     </main>
