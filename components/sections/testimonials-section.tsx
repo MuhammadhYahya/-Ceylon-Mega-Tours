@@ -47,8 +47,8 @@ function getCopy(locale: Locale) {
         : "Не удалось отправить отзыв. Пожалуйста, попробуйте позже.",
     empty:
       locale === "en"
-        ? "Guest reviews will appear here after approval."
-        : "Отзывы гостей появятся здесь после проверки.",
+        ? "Reviews will appear here."
+        : "Отзывы будут опубликованы здесь.",
     approvedTitle: locale === "en" ? "Guest reviews" : "Отзывы гостей"
   };
 }
