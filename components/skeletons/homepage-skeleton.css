@@ -158,3 +158,150 @@
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
+
+@media (max-width: 768px) {
+  .homepage-skeleton__header {
+    height: 4rem;
+    margin-top: 0.5rem;
+  }
+
+  .homepage-skeleton__hero,
+  .homepage-skeleton__about,
+  .homepage-skeleton__inquiry {
+    gap: 0.85rem;
+  }
+
+  .homepage-skeleton__hero-copy,
+  .homepage-skeleton__about-copy {
+    padding: 1.25rem;
+    gap: 0.75rem;
+    border-radius: 1.5rem;
+  }
+
+  .homepage-skeleton__hero-media,
+  .homepage-skeleton__about-media {
+    min-height: 22rem;
+    border-radius: 1.5rem;
+  }
+
+  .homepage-skeleton__title {
+    height: 2.8rem;
+    border-radius: 1rem;
+  }
+
+  .homepage-skeleton__section-head {
+    gap: 0.7rem;
+    margin-bottom: 1.35rem;
+  }
+
+  .homepage-skeleton__section-title {
+    height: 2.4rem;
+    border-radius: 0.9rem;
+  }
+
+  .homepage-skeleton__grid {
+    gap: 0.85rem;
+  }
+
+  .homepage-skeleton__image {
+    border-radius: 1.35rem;
+  }
+
+  .homepage-skeleton__inquiry-copy,
+  .homepage-skeleton__form {
+    min-height: 18rem;
+    border-radius: 1.35rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .homepage-skeleton__header {
+    height: 3.5rem;
+    margin-top: 0.35rem;
+  }
+
+  .homepage-skeleton__hero,
+  .homepage-skeleton__about,
+  .homepage-skeleton__inquiry {
+    gap: 0.75rem;
+  }
+
+  .homepage-skeleton__hero-copy,
+  .homepage-skeleton__about-copy {
+    padding: 1rem;
+    gap: 0.6rem;
+    border-radius: 1.25rem;
+  }
+
+  .homepage-skeleton__hero-media,
+  .homepage-skeleton__about-media {
+    min-height: 18rem;
+    border-radius: 1.25rem;
+  }
+
+  .homepage-skeleton__eyebrow {
+    width: 7rem;
+    height: 0.75rem;
+  }
+
+  .homepage-skeleton__title {
+    height: 2.2rem;
+    border-radius: 0.85rem;
+  }
+
+  .homepage-skeleton__paragraph {
+    height: 0.85rem;
+  }
+
+  .homepage-skeleton__buttons {
+    gap: 0.55rem;
+    flex-direction: column;
+  }
+
+  .homepage-skeleton__button {
+    width: 100%;
+    height: 2.85rem;
+  }
+
+  .homepage-skeleton__pills {
+    gap: 0.45rem;
+  }
+
+  .homepage-skeleton__pill {
+    width: 6.5rem;
+    height: 2rem;
+  }
+
+  .homepage-skeleton__section-head {
+    gap: 0.55rem;
+    margin-bottom: 1.1rem;
+  }
+
+  .homepage-skeleton__section-title {
+    height: 2rem;
+    border-radius: 0.75rem;
+  }
+
+  .homepage-skeleton__grid {
+    gap: 0.75rem;
+  }
+
+  .homepage-skeleton__card {
+    gap: 0.6rem;
+  }
+
+  .homepage-skeleton__image {
+    border-radius: 1.15rem;
+  }
+
+  .homepage-skeleton__line--title {
+    height: 1.65rem;
+    border-radius: 0.75rem;
+  }
+
+  .homepage-skeleton__inquiry-copy,
+  .homepage-skeleton__form {
+    min-height: 16rem;
+    border-radius: 1.15rem;
+  }
+}

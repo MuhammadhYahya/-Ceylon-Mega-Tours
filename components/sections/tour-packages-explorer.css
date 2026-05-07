@@ -490,3 +490,172 @@
     align-items: flex-start;
   }
 }
+
+@media (max-width: 480px) {
+  .tour-explorer__hero {
+    padding-top: calc(var(--tour-header-height) + 0.5rem);
+    padding-bottom: 0.5rem;
+  }
+
+  .tour-explorer__hero-panel {
+    padding: 0.85rem;
+    border-radius: 1.25rem;
+    gap: 0.85rem;
+  }
+
+  .tour-explorer__eyebrow {
+    font-size: 0.7rem;
+    letter-spacing: 0.18em;
+  }
+
+  .tour-explorer__title {
+    font-size: clamp(1.85rem, 9vw, 2.2rem);
+  }
+
+  .tour-explorer__summary {
+    font-size: 0.88rem;
+    line-height: 1.7;
+  }
+
+  .tour-explorer__stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.65rem;
+  }
+
+  .tour-explorer__stat {
+    padding: 0.95rem;
+    border-radius: 1rem;
+  }
+
+  .tour-explorer__stat strong {
+    font-size: 1.4rem;
+  }
+
+  .tour-explorer__stat span {
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+  }
+
+  .tour-explorer__filters {
+    padding-top: 0.5rem;
+  }
+
+  .tour-explorer__filters-shell {
+    gap: 0.65rem;
+    padding: 0.75rem;
+    border-radius: 1.15rem;
+  }
+
+  .tour-explorer__search input {
+    min-height: 2.85rem;
+    padding-inline: 0.8rem;
+    font-size: 0.92rem;
+    border-radius: 0.85rem;
+  }
+
+  .tour-explorer__mobile-filters {
+    gap: 0.6rem;
+  }
+
+  .tour-explorer__mobile-field {
+    gap: 0.32rem;
+  }
+
+  .tour-explorer__mobile-label {
+    font-size: 0.68rem;
+  }
+
+  .tour-explorer__mobile-field select {
+    min-height: 2.85rem;
+    padding-inline: 0.8rem;
+    font-size: 0.92rem;
+    border-radius: 0.8rem;
+  }
+
+  .tour-explorer__grid {
+    gap: 1rem;
+  }
+
+  .tour-explorer__card {
+    border-radius: 1.25rem;
+  }
+
+  .tour-explorer__card-media {
+    min-height: 11rem;
+    padding: 0.85rem;
+  }
+
+  .tour-explorer__pill {
+    min-height: 1.85rem;
+    padding: 0.25rem 0.6rem;
+    font-size: 0.7rem;
+  }
+
+  .tour-explorer__card-copy {
+    min-height: 9rem;
+    margin-top: 2.5rem;
+    gap: 0.45rem;
+  }
+
+  .tour-explorer__card-copy p {
+    font-size: 0.68rem;
+    letter-spacing: 0.14em;
+  }
+
+  .tour-explorer__card-copy h2 {
+    font-size: clamp(1.4rem, 5vw, 1.85rem);
+  }
+
+  .tour-explorer__card-body {
+    padding: 0.95rem;
+    gap: 0.75rem;
+  }
+
+  .tour-explorer__card-summary {
+    font-size: 0.88rem;
+    line-height: 1.7;
+  }
+
+  .tour-explorer__card-meta {
+    font-size: 0.75rem;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+  }
+
+  .tour-explorer__card-link {
+    font-size: 0.88rem;
+  }
+
+  .tour-explorer__empty {
+    padding: 2.5rem 1rem;
+    border-radius: 1.25rem;
+  }
+
+  .tour-explorer__empty h2 {
+    font-size: 1.15rem;
+  }
+
+  .tour-explorer__empty p {
+    font-size: 0.88rem;
+  }
+
+  .tour-explorer__empty button {
+    min-height: 2.75rem;
+    padding: 0.6rem 0.9rem;
+    font-size: 0.88rem;
+  }
+
+  .tour-explorer__results-meta {
+    gap: 0.3rem;
+    margin-bottom: 0.95rem;
+  }
+
+  .tour-explorer__results-meta p {
+    font-size: 0.95rem;
+  }
+
+  .tour-explorer__results-meta span {
+    font-size: 0.85rem;
+    line-height: 1.5;
+  }
+}

@@ -207,30 +207,92 @@
   }
 }
 
+@media (max-width: 768px) {
+  .destination-grid__cards {
+    gap: 0.8rem;
+    margin-top: 1.5rem;
+  }
+
+  .destination-grid__card {
+    padding: 1rem 1.1rem;
+    border-radius: 1.25rem;
+  }
+
+  .destination-grid__card-number {
+    min-width: 2.2rem;
+    min-height: 2.2rem;
+    font-size: 0.72rem;
+  }
+
+  .destination-grid__card h3 {
+    font-size: clamp(1.25rem, 3.5vw, 1.65rem);
+  }
+
+  .destination-grid__card p {
+    font-size: 0.92rem;
+    line-height: 1.65;
+  }
+
+  .destination-grid .button-ghost {
+    margin-top: 1rem;
+  }
+}
+
 @media (max-width: 640px) {
   .destination-grid__stage {
-    border-radius: 28px;
-    padding: 0.8rem;
+    border-radius: 1.5rem;
+    padding: 0.75rem;
   }
 
   .destination-grid__media {
-    margin-bottom: 0.7rem;
+    margin-bottom: 0.6rem;
   }
 
   .destination-grid__frame {
-    min-height: 18rem;
-    border-radius: 22px;
+    min-height: 16rem;
+    border-radius: 1.25rem;
+  }
+
+  .destination-grid__content {
+    padding: 0.85rem 0 0.4rem;
+  }
+
+  .destination-grid__cards {
+    gap: 0.65rem;
+    margin-top: 1.25rem;
   }
 
   .destination-grid__card {
     grid-template-columns: 1fr;
-    gap: 0.55rem;
-    padding: 1rem;
+    gap: 0.45rem;
+    padding: 0.85rem;
+    border-radius: 1.1rem;
+  }
+
+  .destination-grid__card-number {
+    min-width: 2rem;
+    min-height: 2rem;
+    font-size: 0.68rem;
   }
 
   .destination-grid__card-number,
   .destination-grid__card h3,
   .destination-grid__card p {
     grid-column: auto;
+  }
+
+  .destination-grid__card h3 {
+    font-size: 1.15rem;
+  }
+
+  .destination-grid__card p {
+    font-size: 0.85rem;
+    line-height: 1.6;
+  }
+
+  .destination-grid .button-ghost {
+    margin-top: 0.85rem;
+    width: 100%;
+    justify-content: center;
   }
 }
