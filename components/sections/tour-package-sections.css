@@ -106,3 +106,132 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+@media (max-width: 768px) {
+  .tour-detail-sections {
+    gap: 0.85rem;
+  }
+
+  .tour-detail-panel {
+    padding: 1rem;
+    gap: 0.85rem;
+    border-radius: 1.35rem;
+  }
+
+  .tour-detail-panel__heading {
+    font-size: 0.78rem;
+    letter-spacing: 0.16em;
+  }
+
+  .tour-detail-richtext,
+  .tour-detail-timeline__body,
+  .tour-detail-item-card__body {
+    gap: 0.65rem;
+    font-size: 0.92rem;
+    line-height: 1.75;
+  }
+
+  .tour-detail-timeline {
+    gap: 0.75rem;
+  }
+
+  .tour-detail-timeline__item {
+    grid-template-columns: 2.4rem minmax(0, 1fr);
+    gap: 0.7rem;
+  }
+
+  .tour-detail-timeline__index {
+    width: 2.1rem;
+    height: 2.1rem;
+    font-size: 0.88rem;
+  }
+
+  .tour-detail-timeline__copy {
+    gap: 0.38rem;
+  }
+
+  .tour-detail-timeline__copy h3,
+  .tour-detail-item-card h3 {
+    font-size: 1rem;
+  }
+
+  .tour-detail-grid {
+    gap: 0.7rem;
+  }
+
+  .tour-detail-item-card {
+    padding: 0.9rem;
+    gap: 0.45rem;
+    border-radius: 1.05rem;
+  }
+
+  .tour-detail-item-card__eyebrow {
+    font-size: 0.68rem;
+    letter-spacing: 0.16em;
+  }
+}
+
+@media (max-width: 480px) {
+  .tour-detail-sections {
+    gap: 0.75rem;
+  }
+
+  .tour-detail-panel {
+    padding: 0.85rem;
+    gap: 0.75rem;
+    border-radius: 1.15rem;
+  }
+
+  .tour-detail-panel__heading {
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+  }
+
+  .tour-detail-richtext,
+  .tour-detail-timeline__body,
+  .tour-detail-item-card__body {
+    gap: 0.55rem;
+    font-size: 0.85rem;
+    line-height: 1.7;
+  }
+
+  .tour-detail-timeline {
+    gap: 0.65rem;
+  }
+
+  .tour-detail-timeline__item {
+    grid-template-columns: 2.1rem minmax(0, 1fr);
+    gap: 0.55rem;
+  }
+
+  .tour-detail-timeline__index {
+    width: 1.9rem;
+    height: 1.9rem;
+    font-size: 0.82rem;
+  }
+
+  .tour-detail-timeline__copy {
+    gap: 0.32rem;
+    padding-top: 0.12rem;
+  }
+
+  .tour-detail-timeline__copy h3,
+  .tour-detail-item-card h3 {
+    font-size: 0.95rem;
+  }
+
+  .tour-detail-grid {
+    gap: 0.6rem;
+  }
+
+  .tour-detail-item-card {
+    padding: 0.8rem;
+    gap: 0.38rem;
+    border-radius: 0.95rem;
+  }
+
+  .tour-detail-item-card__eyebrow {
+    font-size: 0.65rem;
+    letter-spacing: 0.14em;
+  }
+}

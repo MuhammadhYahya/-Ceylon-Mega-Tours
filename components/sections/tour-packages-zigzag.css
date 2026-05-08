@@ -82,9 +82,14 @@
 }
 
 @media (max-width: 900px) {
+  .package-zigzag {
+    gap: 1.25rem;
+  }
+
   .package-zigzag__row,
   .package-zigzag__row.is-reversed {
     grid-template-columns: 1fr;
+    gap: 1rem;
   }
 
   .package-zigzag__row.is-reversed .package-zigzag__media,
@@ -93,14 +98,77 @@
   }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
+  .package-zigzag {
+    gap: 1rem;
+  }
+
+  .package-zigzag__row {
+    gap: 0.85rem;
+  }
+
   .package-zigzag__media {
-    min-height: 320px;
-    border-radius: 24px;
+    min-height: 280px;
+    border-radius: 1.5rem;
   }
 
   .package-zigzag__content {
-    padding: 1.35rem;
-    border-radius: 24px;
+    padding: 1.25rem;
+    border-radius: 1.5rem;
+    gap: 0.85rem;
+  }
+
+  .package-zigzag__meta {
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+  }
+
+  .package-zigzag__content h3 {
+    font-size: clamp(1.65rem, 5vw, 2.2rem);
+  }
+
+  .package-zigzag__content p {
+    font-size: 0.92rem;
+    line-height: 1.75;
+  }
+}
+
+@media (max-width: 480px) {
+  .package-zigzag {
+    gap: 0.85rem;
+  }
+
+  .package-zigzag__row {
+    gap: 0.75rem;
+  }
+
+  .package-zigzag__media {
+    min-height: 220px;
+    border-radius: 1.25rem;
+  }
+
+  .package-zigzag__content {
+    padding: 1rem;
+    border-radius: 1.25rem;
+    gap: 0.7rem;
+  }
+
+  .package-zigzag__meta {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+  }
+
+  .package-zigzag__content h3 {
+    font-size: clamp(1.4rem, 6vw, 1.8rem);
+  }
+
+  .package-zigzag__content p {
+    font-size: 0.85rem;
+    line-height: 1.7;
+  }
+
+  .package-zigzag__link {
+    margin-top: 0.25rem;
+    font-size: 0.88rem;
   }
 }
